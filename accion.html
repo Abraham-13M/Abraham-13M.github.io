@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Juegos de Acción</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body{margin:0;font-family:'Orbitron',Arial,Helvetica,sans-serif;background:#0b0b12;color:#fff}
+        header{background:rgba(20,20,40,0.9);padding:16px;text-align:center}
+        .grid{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;padding:30px}
+        .card{background:rgba(30,30,60,0.9);border-radius:12px;padding:16px;width:260px;box-shadow:0 6px 24px #000a;cursor:pointer}
+        .card img{width:100%;height:140px;object-fit:cover;border-radius:8px}
+        .precio{color:#00ffe7;font-weight:700;margin-top:8px}
+        .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);align-items:center;justify-content:center}
+        .modal-content{background:rgba(18,18,30,0.98);padding:24px;border-radius:12px;max-width:800px;width:92%}
+        .close{position:absolute;right:12px;top:8px;background:#ff4c4c;border:none;border-radius:50%;width:34px;height:34px;color:#fff}
+    </style>
+</head>
+<body>
+    <header>
+        <h1 style="color:#00ffe7;margin:6px 0">Juegos de Acción</h1>
+        <a href="index.html" style="color:#fff;text-decoration:none;background:#00ffe7;padding:8px 12px;border-radius:8px">Volver</a>
+    </header>
+    <main>
+        <div class="grid" id="grid"></div>
+    </main>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <button id="close" class="close">&times;</button>
+            <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">
+                <img id="m-img" src="" alt="" style="width:260px;height:150px;object-fit:cover;border-radius:8px">
+                <div style="flex:1">
+                    <h2 id="m-title" style="color:#00ffe7;margin-top:0"></h2>
+                    <div id="m-price" style="color:#00ffe7;font-weight:700;margin-bottom:8px"></div>
+                    <p id="m-desc" style="color:#ddd;line-height:1.4"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const accionGames = [
+        { nombre: 'Apex Legends', precio: 'Gratis', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/1172470/header.jpg', descripcion: 'Battle royale de héroes con partidas por equipos, habilidades únicas y ritmo rápido.', steamAppId: 1172470 },
+        { nombre: 'Counter-Strike 2', precio: '$19.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/730/header.jpg', descripcion: 'Shooter táctico en equipos con mapas competitivos y economía de armas.', steamAppId: 730 },
+        { nombre: 'Call of Duty: Warzone', precio: 'Gratis', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/1962663/header.jpg', descripcion: 'Battle royale moderno con vehículos, loot y modos por equipos.', steamAppId: 1962663 },
+        { nombre: 'PUBG: Battlegrounds', precio: '$14.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/578080/header.jpg', descripcion: 'Pionero del battle royale con partidas masivas y enfoque realista.', steamAppId: 578080 },
+        { nombre: 'DOOM Eternal', precio: '$39.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/782330/header.jpg', descripcion: 'Shooter rápido y violento centrado en el combate cuerpo a cuerpo y movilidad.', steamAppId: 782330 },
+        { nombre: 'Fortnite', precio: 'Gratis', imagen: 'https://cdn2.unrealengine.com/fortnite-bp2-23-1920x1080-1920x1080-2c7b6e2e6b2c.jpg', descripcion: 'Battle royale con construcción, eventos en vivo y estética colorida.', steamAppId: null },
+        { nombre: 'DOOM (2016)', precio: '$19.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/379720/header.jpg', descripcion: 'Reinicio de la saga DOOM: acción frenética y demonios por doquier.', steamAppId: 379720 },
+        { nombre: 'Titanfall 2', precio: '$24.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/1237970/header.jpg', descripcion: 'Combina parkour ágil con combates entre pilotos y titanes gigantes.', steamAppId: 1237970 },
+        { nombre: 'Destiny 2', precio: 'Gratis', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/1085660/header.jpg', descripcion: 'Shooter online con elementos de MMO y misiones cooperativas.', steamAppId: 1085660 },
+        { nombre: 'Rainbow Six Siege', precio: '$14.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/359550/header.jpg', descripcion: 'Shooter táctico enfocado en la destrucción y juego en equipo.', steamAppId: 359550 },
+        { nombre: 'Metro Exodus', precio: '$29.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/412020/header.jpg', descripcion: 'Shooter en primera persona con fuerte énfasis en la narrativa y supervivencia.', steamAppId: 412020 },
+        { nombre: 'Borderlands 3', precio: '$39.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/397540/header.jpg', descripcion: 'Shooter-looter con humor, cooperativo y toneladas de armas.', steamAppId: 397540 },
+        { nombre: 'Wolfenstein II', precio: '$29.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/582500/header.jpg', descripcion: 'Shooter de un solo jugador con campaña intensa y acción cinematográfica.', steamAppId: 582500 },
+        { nombre: 'Sekiro: Shadows Die Twice', precio: '$49.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/814380/header.jpg', descripcion: 'Acción desafiante con combates cuerpo a cuerpo y parry como mecánica central.', steamAppId: 814380 },
+        { nombre: 'Devil May Cry 5', precio: '$39.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/601150/header.jpg', descripcion: 'Hack and slash estilizado con combos y personajes icónicos.', steamAppId: 601150 },
+        { nombre: 'Nier: Automata', precio: '$39.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/524220/header.jpg', descripcion: 'Combina acción con narrativa filosófica y múltiples finales.', steamAppId: 524220 },
+        { nombre: 'Gears 5', precio: '$39.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/1097840/header.jpg', descripcion: 'Shooter en tercera persona con fuerte enfoque en la campaña y multijugador.', steamAppId: 1097840 },
+        { nombre: 'Max Payne 3', precio: '$9.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/204100/header.jpg', descripcion: 'Shooter con cámara lenta y narrativa noir.', steamAppId: 204100 },
+        { nombre: 'Shadow of the Tomb Raider', precio: '$29.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/750920/header.jpg', descripcion: 'Acción-aventura con exploración, plataformas y combate.', steamAppId: 750920 },
+        { nombre: 'Mad Max', precio: '$19.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/377200/header.jpg', descripcion: 'Acción post-apocalíptica con combate vehicular y a pie.', steamAppId: 377200 },
+        { nombre: 'Just Cause 4', precio: '$19.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/594120/header.jpg', descripcion: 'Acción explosiva con físicas exageradas y mundo abierto para el caos.', steamAppId: 594120 }
+    ];
+
+    const grid = document.getElementById('grid');
+    function render(){
+        grid.innerHTML = '';
+        const juegos = [...accionGames].sort((a,b)=>a.nombre.localeCompare(b.nombre));
+        juegos.forEach(g=>{
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.tabIndex = 0;
+            card.innerHTML = `
+                <img src="${g.imagen}" alt="${g.nombre}">
+                <h3 style="color:#00ffe7;margin:8px 0">${g.nombre}</h3>
+                <div class="precio">${g.precio}</div>
+            `;
+            card.addEventListener('click', ()=>openModal(g));
+            grid.appendChild(card);
+        });
+    }
+    function openModal(g){
+        document.getElementById('m-img').src = g.imagen;
+        document.getElementById('m-title').textContent = g.nombre;
+        document.getElementById('m-price').textContent = g.precio;
+        document.getElementById('m-desc').textContent = g.descripcion;
+        // añadir botón Comprar en Steam
+        let comprar = document.getElementById('m-comprar');
+        if(!comprar){
+            comprar = document.createElement('button');
+            comprar.id = 'm-comprar';
+            comprar.style.marginTop = '12px';
+            comprar.style.background = '#00a2ff';
+            comprar.style.color = '#fff';
+            comprar.style.padding = '10px 14px';
+            comprar.style.border = 'none';
+            comprar.style.borderRadius = '8px';
+            comprar.style.cursor = 'pointer';
+            document.querySelector('.modal-content > div').appendChild(comprar);
+        }
+        comprar.textContent = 'Comprar en Steam';
+        comprar.onclick = function(){
+            if(g.steamAppId){
+                const steamAppUrl = 'https://store.steampowered.com/app/' + g.steamAppId;
+                window.open(steamAppUrl, '_blank');
+            } else {
+                const steamSearch = 'https://store.steampowered.com/search/?term=' + encodeURIComponent(g.nombre);
+                window.open(steamSearch, '_blank');
+            }
+        };
+        document.getElementById('modal').style.display = 'flex';
+    }
+    document.getElementById('close').addEventListener('click', ()=>{document.getElementById('modal').style.display='none'});
+    document.getElementById('modal').addEventListener('click', (e)=>{ if(e.target===document.getElementById('modal')) document.getElementById('modal').style.display='none'; });
+    render();
+    </script>
+</body>
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Videojuegos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Orbitron', Arial, sans-serif;
+            background: url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1500&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+        }
+        header {
+            background: rgba(20, 20, 40, 0.85);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+        }
+        nav a {
+            color: #00ffe7;
+            text-decoration: none;
+            font-size: 1.2em;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        nav a:hover {
+            background: #00ffe7;
+            color: #222;
+        }
+        .destacados {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin: 40px 0;
+        }
+        .juego {
+            background: rgba(30,30,60,0.85);
+            border-radius: 16px;
+            box-shadow: 0 4px 16px #000a;
+            width: 260px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .juego:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 32px #00ffe7aa;
+        }
+        .juego img {
+            width: 200px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .precio {
+            font-size: 1.3em;
+            color: #00ffe7;
+            margin: 10px 0;
+        }
+        .cta {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 60px 0 40px 0;
+        }
+        .cta button {
+            background: #00ffe7;
+            color: #222;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 8px;
+            padding: 15px 40px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+        .cta button:hover {
+            background: #009e9e;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="#destacados">Destacados</a>
+            <a href="#videojuegos">Videojuegos</a>
+            <a href="accion.html" id="btnAccion" style="color:#00ffe7;" target="_blank" rel="noopener">Juegos de Acción</a>
+            <a href="#catalogo">Catálogo</a>
+            <a href="#registro">Registro</a>
+        </nav>
+    </header>
+    <section class="destacados" id="destacados">
+        <div class="juego">
+            <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/730/header.jpg" alt="Counter-Strike 2">
+            <h2>Counter-Strike 2</h2>
+            <div class="precio">$19.99</div>
+        </div>
+        <div class="juego">
+            <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg" alt="Cyberpunk 2077">
+            <h2>Cyberpunk 2077</h2>
+            <div class="precio">$29.99</div>
+        </div>
+        <div class="juego">
+            <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1172470/header.jpg" alt="Apex Legends">
+            <h2>Apex Legends</h2>
+            <div class="precio">Gratis</div>
+        </div>
+        <div class="juego">
+            <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/578080/header.jpg" alt="PUBG: Battlegrounds">
+            <h2>PUBG: Battlegrounds</h2>
+            <div class="precio">$14.99</div>
+        </div>
+    </section>
+    <section id="videojuegos" style="margin:60px 0 40px 0;">
+        <h2 style="text-align:center;color:#00ffe7;">Videojuegos</h2>
+        <div id="lista-videojuegos" style="display:flex;flex-wrap:wrap;justify-content:center;gap:30px;"></div>
+    </section>
+    <!-- Sección Acción -->
+    <section id="accion" style="margin:60px 0 40px 0;">
+        <h2 style="text-align:center;color:#00ffe7;">Juegos de Acción</h2>
+        <div id="lista-accion" style="display:flex;flex-wrap:wrap;justify-content:center;gap:30px;"></div>
+    </section>
+    <section class="cta" id="registro">
+        <h2>¿Listo para jugar?</h2>
+        <p>Regístrate ahora y accede a ofertas exclusivas, novedades y mucho más.</p>
+        <button id="abrirRegistro" style="background:#00ffe7;color:#222;font-size:1.2em;border:none;border-radius:8px;padding:15px 40px;cursor:pointer;transition:background 0.3s;margin-top:10px;">Registrarse</button>
+        <div id="modalRegistro" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.7);z-index:9999;justify-content:center;align-items:center;">
+            <div style="background:rgba(20,20,40,0.97);padding:40px 30px;border-radius:16px;box-shadow:0 4px 24px #000a;max-width:400px;width:90%;position:relative;">
+                <button id="cerrarModal" style="position:absolute;top:10px;right:10px;background:#ff4c4c;color:#fff;border:none;border-radius:50%;width:32px;height:32px;font-size:1.2em;cursor:pointer;">&times;</button>
+                <h2 style="text-align:center;margin-bottom:30px;">Registro de Usuario</h2>
+                <form id="formRegistro">
+                    <label for="email">Correo electrónico</label>
+                    <input type="email" id="email" name="email" required style="width:100%;padding:10px;margin-bottom:18px;border-radius:8px;border:none;font-size:1em;">
+
+                    <label for="usuario">Nombre de usuario</label>
+                    <input type="text" id="usuario" name="usuario" required style="width:100%;padding:10px;margin-bottom:18px;border-radius:8px;border:none;font-size:1em;">
+
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" required style="width:100%;padding:10px;margin-bottom:18px;border-radius:8px;border:none;font-size:1em;">
+
+                    <label for="confirmar">Confirmar contraseña</label>
+                    <input type="password" id="confirmar" name="confirmar" required style="width:100%;padding:10px;margin-bottom:18px;border-radius:8px;border:none;font-size:1em;">
+
+                    <button type="submit" style="width:100%;background:#00ffe7;color:#222;font-size:1.2em;border:none;border-radius:8px;padding:15px 0;cursor:pointer;transition:background 0.3s;">Registrarse</button>
+                </form>
+                <div id="mensaje-exito" style="display:none;margin-top:20px;color:#00ffe7;text-align:center;font-size:1.1em;"></div>
+            </div>
+        </div>
+    </section>
+    <script>
+    // Datos de videojuegos
+    const videojuegos = [
+        {
+            nombre: 'Apex Legends',
+            precio: 'Gratis',
+            imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/1172470/header.jpg'
+        },
+        {
+            nombre: 'Counter-Strike 2',
+            precio: '$19.99',
+            imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/730/header.jpg'
+        },
+        {
+            nombre: 'Call of Duty: Warzone',
+            precio: 'Gratis',
+            imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/1962663/header.jpg'
+        },
+        {
+            nombre: 'PUBG: Battlegrounds',
+            precio: '$14.99',
+            imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/578080/header.jpg'
+        },
+        {
+            nombre: 'DOOM Eternal',
+            precio: '$39.99',
+            imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/782330/header.jpg'
+        },
+        {
+            nombre: 'Fortnite',
+            precio: 'Gratis',
+            imagen: 'https://cdn2.unrealengine.com/fortnite-bp2-23-1920x1080-1920x1080-2c7b6e2e6b2c.jpg'
+        },
+        {
+            nombre: 'Cyberpunk 2077',
+            precio: '$29.99',
+            imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg'
+        },
+        {
+            nombre: 'The Witcher 3',
+            precio: '$24.99',
+            imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/292030/header.jpg'
+        },
+        {
+            nombre: 'FIFA 24',
+            precio: '$59.99',
+            imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/2195250/header.jpg'
+        },
+        {
+            nombre: 'NBA 2K25',
+            precio: '$49.99',
+            imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/2476640/header.jpg'
+        }
+    ];
+    // Datos específicos para juegos de acción (incluye descripción)
+    const accionGames = [
+        { nombre: 'Apex Legends', precio: 'Gratis', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/1172470/header.jpg', descripcion: 'Battle royale de héroes con partidas por equipos, habilidades únicas y ritmo rápido.' },
+        { nombre: 'Counter-Strike 2', precio: '$19.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/730/header.jpg', descripcion: 'Shooter táctico en equipos con mapas competitivos y economía de armas.' },
+        { nombre: 'Call of Duty: Warzone', precio: 'Gratis', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/1962663/header.jpg', descripcion: 'Battle royale moderno con vehículos, loot y modos por equipos.' },
+        { nombre: 'PUBG: Battlegrounds', precio: '$14.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/578080/header.jpg', descripcion: 'Pionero del battle royale con partidas masivas y enfoque realista.' },
+        { nombre: 'DOOM Eternal', precio: '$39.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/782330/header.jpg', descripcion: 'Shooter rápido y violento centrado en el combate cuerpo a cuerpo y movilidad.' },
+        { nombre: 'Fortnite', precio: 'Gratis', imagen: 'https://cdn2.unrealengine.com/fortnite-bp2-23-1920x1080-1920x1080-2c7b6e2e6b2c.jpg', descripcion: 'Battle royale con construcción, eventos en vivo y estética colorida.' },
+        { nombre: 'DOOM (2016)', precio: '$19.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/379720/header.jpg', descripcion: 'Reinicio de la saga DOOM: acción frenética y demonios por doquier.' },
+        { nombre: 'Titanfall 2', precio: '$24.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/1237970/header.jpg', descripcion: 'Combina parkour ágil con combates entre pilotos y titanes gigantes.' },
+        { nombre: 'Destiny 2', precio: 'Gratis', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/1085660/header.jpg', descripcion: 'Shooter online con elementos de MMO y misiones cooperativas.' },
+        { nombre: 'Rainbow Six Siege', precio: '$14.99', imagen: 'https://cdn.cloudflare.steamstatic.com/steam/apps/359550/header.jpg', descripcion: 'Shooter táctico enfocado en la destrucción y juego en equipo.' }
+    ];
+
+    // Modal para descripción de juego
+    const modalDesc = document.createElement('div');
+    modalDesc.id = 'modalDesc';
+    modalDesc.style.display = 'none';
+    modalDesc.style.position = 'fixed';
+    modalDesc.style.top = '0';
+    modalDesc.style.left = '0';
+    modalDesc.style.width = '100vw';
+    modalDesc.style.height = '100vh';
+    modalDesc.style.background = 'rgba(0,0,0,0.7)';
+    modalDesc.style.zIndex = '10000';
+    modalDesc.style.justifyContent = 'center';
+    modalDesc.style.alignItems = 'center';
+    modalDesc.innerHTML = `
+        <div style="background:rgba(20,20,40,0.98);padding:30px;border-radius:12px;max-width:700px;width:90%;position:relative;">
+            <button id="cerrarDesc" style="position:absolute;top:10px;right:10px;background:#ff4c4c;color:#fff;border:none;border-radius:50%;width:32px;height:32px;font-size:1.2em;cursor:pointer;">&times;</button>
+            <div id="desc-contenido" style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;">
+                <img id="desc-img" src="" alt="" style="width:220px;height:120px;object-fit:cover;border-radius:8px;">
+                <div style="flex:1;">
+                    <h3 id="desc-nombre" style="color:#00ffe7;margin-top:0;"></h3>
+                    <div id="desc-precio" style="color:#00ffe7;font-weight:700;margin-bottom:8px;"></div>
+                    <p id="desc-text" style="line-height:1.4;color:#ddd;"></p>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modalDesc);
+
+    document.body.addEventListener('click', function(e){
+        if(e.target && e.target.matches('.accion-card, .accion-card *')){
+            // buscar el data-name
+            const card = e.target.closest('.accion-card');
+            const name = card.dataset.name;
+            const game = accionGames.find(g => g.nombre === name);
+            if(game){
+                document.getElementById('desc-img').src = game.imagen;
+                document.getElementById('desc-nombre').textContent = game.nombre;
+                document.getElementById('desc-precio').textContent = game.precio;
+                document.getElementById('desc-text').textContent = game.descripcion;
+                modalDesc.style.display = 'flex';
+            }
+        }
+    });
+    document.getElementById('cerrarDesc').onclick = function(){ modalDesc.style.display='none'; };
+
+    // Mostrar juegos de acción
+    function mostrarAccion(){
+        const lista = document.getElementById('lista-accion');
+        lista.innerHTML = '';
+        const juegos = [...accionGames].sort((a,b)=> a.nombre.localeCompare(b.nombre));
+        juegos.forEach(juego=>{
+            const div = document.createElement('div');
+            div.className = 'juego accion-card';
+            div.dataset.name = juego.nombre;
+            div.style.width = '220px';
+            div.style.cursor = 'pointer';
+            div.innerHTML = `
+                <img src="${juego.imagen}" alt="${juego.nombre}" style="width:180px;height:100px;object-fit:cover;border-radius:10px;margin-bottom:10px;">
+                <h3 style="color:#00ffe7;">${juego.nombre}</h3>
+                <div class="precio" style="font-size:1.1em;color:#00ffe7;margin:8px 0;">${juego.precio}</div>
+            `;
+            lista.appendChild(div);
+        });
+    }
+    mostrarAccion();
+    function mostrarVideojuegos() {
+        const lista = document.getElementById('lista-videojuegos');
+        lista.innerHTML = '';
+        const juegos = [...videojuegos].sort((a, b) => a.nombre.localeCompare(b.nombre));
+        juegos.forEach(juego => {
+            const div = document.createElement('div');
+            div.className = 'juego';
+            div.style.width = '220px';
+            div.style.background = 'rgba(30,30,60,0.85)';
+            div.style.borderRadius = '16px';
+            div.style.boxShadow = '0 4px 16px #000a';
+            div.style.padding = '18px';
+            div.style.textAlign = 'center';
+            div.innerHTML = `<img src='${juego.imagen}' alt='${juego.nombre}' style='width:180px;height:100px;object-fit:cover;border-radius:10px;margin-bottom:10px;'><h3 style='color:#00ffe7;'>${juego.nombre}</h3><div class='precio' style='font-size:1.1em;color:#00ffe7;margin:8px 0;'>${juego.precio}</div>`;
+            lista.appendChild(div);
+        });
+    }
+    mostrarVideojuegos();
+    // Abrir modal
+    document.getElementById('abrirRegistro').onclick = function() {
+        document.getElementById('modalRegistro').style.display = 'flex';
+    };
+    // Cerrar modal
+    document.getElementById('cerrarModal').onclick = function() {
+        document.getElementById('modalRegistro').style.display = 'none';
+    };
+    // Cerrar modal al hacer click fuera del formulario
+    document.getElementById('modalRegistro').onclick = function(e) {
+        if(e.target === this) this.style.display = 'none';
+    };
+    // Validación y mensaje de éxito
+    document.getElementById('formRegistro').onsubmit = function(e) {
+        e.preventDefault();
+        var email = document.getElementById('email').value;
+        var usuario = document.getElementById('usuario').value;
+        var password = document.getElementById('password').value;
+        var confirmar = document.getElementById('confirmar').value;
+        var mensaje = document.getElementById('mensaje-exito');
+        if(password !== confirmar) {
+            mensaje.style.display = 'block';
+            mensaje.style.color = '#ff4c4c';
+            mensaje.textContent = 'Las contraseñas no coinciden.';
+            return;
+        }
+        mensaje.style.display = 'block';
+        mensaje.style.color = '#00ffe7';
+        mensaje.textContent = '¡Registro exitoso!';
+        this.reset();
+        setTimeout(function(){
+            document.getElementById('modalRegistro').style.display = 'none';
+            mensaje.style.display = 'none';
+        }, 2000);
+    };
+    </script>
+</body>
+</html>

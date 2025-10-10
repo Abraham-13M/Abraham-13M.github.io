@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Catálogo de Videojuegos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root{--accent:#00ffe7;--dark:#0b0b12;--card:#1e1e3c}
+    body{margin:0;font-family:'Orbitron',Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#071022 0%, #0b0b12 100%);color:#fff}
+    header{padding:28px 20px;text-align:center;background:linear-gradient(90deg, rgba(0,0,0,0.2), rgba(0,0,0,0.0));}
+    .hero{max-width:1100px;margin:24px auto;padding:40px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;display:flex;gap:24px;align-items:center}
+    .hero img{width:320px;border-radius:12px}
+    .hero .copy{flex:1}
+    .cta{background:var(--accent);color:#042;display:inline-block;padding:12px 20px;border-radius:10px;font-weight:700;text-decoration:none}
+    .controls{max-width:1100px;margin:20px auto;display:flex;gap:12px;align-items:center}
+    .controls input,.controls select{padding:10px;border-radius:8px;border:none;background:#111;color:#fff;flex:1}
+    .grid{max-width:1100px;margin:18px auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
+    .card{background:var(--card);padding:12px;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,0.6);cursor:pointer}
+    .card img{width:100%;height:120px;object-fit:cover;border-radius:8px}
+    .card h3{color:var(--accent);margin:8px 0 6px}
+    .price{color:var(--accent);font-weight:700}
+    /* modal */
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);align-items:center;justify-content:center}
+    .modal .box{background:#070710;padding:20px;border-radius:12px;max-width:900px;width:94%}
+    .modal .close{background:#ff4c4c;border:none;border-radius:50%;color:#fff;width:36px;height:36px}
+    @media(max-width:800px){.hero{flex-direction:column}.hero img{width:100%}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1 style="color:var(--accent);margin:6px 0">Catálogo de Videojuegos</h1>
+    <p style="opacity:0.8;max-width:900px;margin:6px auto">Explora nuestro catálogo, encuentra ofertas y registra para recibir novedades.</p>
+  </header>
+
+  <section class="hero">
+    <img src="https://images.unsplash.com/photo-1606813902879-3b9a4b6f2f77?auto=format&fit=crop&w=1200&q=80" alt="catalogo">
+    <div class="copy">
+      <h2 style="color:var(--accent)">Tu tienda de videojuegos</h2>
+      <p style="color:#ddd;line-height:1.5">Encuentra los mejores títulos, filtra por categoría, y compra en Steam desde la página del juego.</p>
+      <a class="cta" href="accion.html" target="_blank" rel="noopener">Explorar Juegos de Acción</a>
+    </div>
+  </section>
+
+  <section class="controls">
+    <input id="search" placeholder="Buscar por título...">
+    <select id="category">
+      <option value="all">Todas las categorías</option>
+      <option value="accion">Acción</option>
+      <option value="aventura">Aventura</option>
+      <option value="rpg">RPG</option>
+      <option value="deportes">Deportes</option>
+      <option value="estrategia">Estrategia</option>
+    </select>
+    <select id="sort">
+      <option value="alpha">Ordenar A-Z</option>
+      <option value="priceAsc">Precio: bajo a alto</option>
+      <option value="priceDesc">Precio: alto a bajo</option>
+    </select>
+  </section>
+
+  <section class="grid" id="catalogGrid"></section>
+
+  <div class="modal" id="modal">
+    <div class="box">
+      <button id="closeModal" class="close">&times;</button>
+      <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start">
+        <img id="modalImg" src="" alt="" style="width:300px;height:170px;object-fit:cover;border-radius:8px">
+        <div style="flex:1">
+          <h2 id="modalTitle" style="color:var(--accent)"></h2>
+          <div id="modalPrice" style="color:var(--accent);font-weight:700;margin-bottom:8px"></div>
+          <p id="modalDesc" style="color:#ddd;line-height:1.4"></p>
+          <div style="margin-top:12px">
+            <button id="buyBtn" style="background:var(--accent);color:#042;border:none;padding:10px 14px;border-radius:8px;cursor:pointer">Comprar en Steam</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const catalog = [
+      {nombre:'Counter-Strike 2',categoria:'accion',precio:19.99,imagen:'https://cdn.cloudflare.steamstatic.com/steam/apps/730/header.jpg',descripcion:'Shooter táctico competitivo.',steamAppId:730,plataforma:['PC'],rating:9.0},
+      {nombre:'Apex Legends',categoria:'accion',precio:0,imagen:'https://cdn.cloudflare.steamstatic.com/steam/apps/1172470/header.jpg',descripcion:'Battle royale de héroes.',steamAppId:1172470,plataforma:['PC','PS5','Xbox'],rating:8.2},
+      {nombre:'Cyberpunk 2077',categoria:'aventura',precio:29.99,imagen:'https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg',descripcion:'RPG futurista con mundo abierto.',steamAppId:1091500,plataforma:['PC','PS5','Xbox'],rating:7.5},
+      {nombre:'FIFA 24',categoria:'deportes',precio:59.99,imagen:'https://cdn.cloudflare.steamstatic.com/steam/apps/2195250/header.jpg',descripcion:'Simulador de fútbol.',steamAppId:2195250,plataforma:['PC','PS5','Xbox'],rating:7.8},
+      {nombre:'DOOM Eternal',categoria:'accion',precio:39.99,imagen:'https://cdn.cloudflare.steamstatic.com/steam/apps/782330/header.jpg',descripcion:'Shooter frenético y brutal.',steamAppId:782330,plataforma:['PC','PS5','Xbox'],rating:8.6},
+      {nombre:'The Witcher 3',categoria:'rpg',precio:24.99,imagen:'https://cdn.cloudflare.steamstatic.com/steam/apps/292030/header.jpg',descripcion:'RPG épico con una gran historia.',steamAppId:292030,plataforma:['PC','PS5','Xbox'],rating:9.5},
+      {nombre:'Rocket League',categoria:'deportes',precio:19.99,imagen:'https://cdn.cloudflare.steamstatic.com/steam/apps/252950/header.jpg',descripcion:'Fútbol con coches.',steamAppId:252950,plataforma:['PC','PS5','Xbox'],rating:8.0},
+      {nombre:'Sekiro: Shadows Die Twice',categoria:'accion',precio:49.99,imagen:'https://cdn.cloudflare.steamstatic.com/steam/apps/814380/header.jpg',descripcion:'Acción desafiante con parry.',steamAppId:814380,plataforma:['PC','PS5','Xbox'],rating:9.0},
+      {nombre:'Borderlands 3',categoria:'accion',precio:39.99,imagen:'https://cdn.cloudflare.steamstatic.com/steam/apps/397540/header.jpg',descripcion:'Shooter-looter con humor.',steamAppId:397540,plataforma:['PC','PS5','Xbox'],rating:7.9},
+      {nombre:'Civilization VI',categoria:'estrategia',precio:29.99,imagen:'https://cdn.cloudflare.steamstatic.com/steam/apps/289070/header.jpg',descripcion:'Estrategia por turnos.',steamAppId:289070,plataforma:['PC','Switch'],rating:8.4}
+    ];
+
+    const grid = document.getElementById('catalogGrid');
+    const search = document.getElementById('search');
+    const category = document.getElementById('category');
+    const sort = document.getElementById('sort');
+    const modal = document.getElementById('modal');
+    const closeModal = document.getElementById('closeModal');
+    const modalImg = document.getElementById('modalImg');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalPrice = document.getElementById('modalPrice');
+    const modalDesc = document.getElementById('modalDesc');
+    const buyBtn = document.getElementById('buyBtn');
+
+    // pagination & wishlist support
+    let currentPage = 1;
+    const pageSize = 8;
+    let favorites = JSON.parse(localStorage.getItem('favorites')||'[]');
+
+    function renderCatalog(items){
+      grid.innerHTML = '';
+      const start = (currentPage-1)*pageSize;
+      const pageItems = items.slice(start, start+pageSize);
+      pageItems.forEach(item=>{
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.name = item.nombre;
+        const favActive = favorites.includes(item.nombre) ? '★' : '☆';
+        card.innerHTML = `
+          <img loading="lazy" src="${item.imagen}" alt="${item.nombre}">
+          <h3>${item.nombre}</h3>
+          <div class="price">${item.precio===0? 'Gratis': '$' + item.precio.toFixed(2)}</div>
+          <div style="margin-top:8px;color:#ccc;font-size:0.9em">Plataformas: ${item.plataforma.join(', ')} • Rating: ${item.rating}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+            <button class="fav-btn" data-name="${item.nombre}" style="background:transparent;border:none;color:var(--accent);font-size:1.2em;cursor:pointer">${favActive}</button>
+            <button class="details-btn" style="background:var(--accent);color:#042;border:none;padding:6px 10px;border-radius:8px;cursor:pointer">Ver</button>
+          </div>
+        `;
+        card.querySelector('.details-btn').addEventListener('click', ()=>openModal(item));
+        card.querySelector('.fav-btn').addEventListener('click', (e)=>{
+          e.stopPropagation(); toggleFavorite(item.nombre, e.target);
+        });
+        grid.appendChild(card);
+      });
+      renderPagination(items.length);
+    }
+
+    function renderPagination(total){
+      // remove old pager
+      const old = document.getElementById('pager');
+      if(old) old.remove();
+      const pages = Math.max(1, Math.ceil(total/pageSize));
+      const pager = document.createElement('div');
+      pager.id = 'pager';
+      pager.style.display='flex';pager.style.justifyContent='center';pager.style.gap='8px';pager.style.margin='18px';
+      for(let i=1;i<=pages;i++){
+        const b = document.createElement('button');
+        b.textContent = i; b.style.padding='6px 10px'; b.style.border='none'; b.style.borderRadius='6px';
+        b.style.cursor='pointer';
+        if(i===currentPage) b.style.background='var(--accent)'; else b.style.background='#222';
+        b.onclick = ()=>{ currentPage=i; applyFilters(); };
+        pager.appendChild(b);
+      }
+      grid.parentNode.insertBefore(pager, grid.nextSibling);
+    }
+
+    function openModal(item){
+      modalImg.src = item.imagen;
+      modalTitle.textContent = item.nombre;
+      modalPrice.textContent = item.precio===0? 'Gratis' : '$' + item.precio.toFixed(2);
+      modalDesc.textContent = item.descripcion + '\n\nPlataformas: ' + item.plataforma.join(', ') + ' — Rating: ' + item.rating;
+      buyBtn.onclick = function(){
+        if(item.steamAppId){
+          window.open('https://store.steampowered.com/app/' + item.steamAppId, '_blank');
+        } else {
+          window.open('https://store.steampowered.com/search/?term=' + encodeURIComponent(item.nombre), '_blank');
+        }
+      };
+      modal.style.display = 'flex';
+    }
+
+    function toggleFavorite(name, btn){
+      const idx = favorites.indexOf(name);
+      if(idx===-1){ favorites.push(name); btn.textContent='★'; }
+      else { favorites.splice(idx,1); btn.textContent='☆'; }
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+    }
+
+    function applyFilters(){
+      const q = search.value.trim().toLowerCase();
+      const cat = category.value;
+      let filtered = catalog.filter(i=> (cat==='all' || i.categoria===cat) && i.nombre.toLowerCase().includes(q));
+      if(sort.value==='alpha') filtered.sort((a,b)=>a.nombre.localeCompare(b.nombre));
+      if(sort.value==='priceAsc') filtered.sort((a,b)=>a.precio - b.precio);
+      if(sort.value==='priceDesc') filtered.sort((a,b)=>b.precio - a.precio);
+      currentPage = 1;
+      renderCatalog(filtered);
+    }
+
+    search.addEventListener('input', applyFilters);
+    category.addEventListener('change', applyFilters);
+    sort.addEventListener('change', applyFilters);
+    closeModal.addEventListener('click', ()=>modal.style.display='none');
+    modal.addEventListener('click', (e)=>{ if(e.target===modal) modal.style.display='none'; });
+
+    renderCatalog(catalog);
+  </script>
+</body>
+</html>
