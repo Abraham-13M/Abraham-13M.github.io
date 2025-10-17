@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Terror — GameCatalog</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root{--accent:#00ffe7;--dark:#0b0b12;--card:#1e1e3c}
+    body{margin:0;font-family:'Orbitron',Arial,Helvetica,sans-serif;background:var(--dark);color:#fff}
+    header{padding:12px 18px;background:transparent;position:sticky;top:0;z-index:60}
+    .topbar{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:16px}
+    .site-nav a{color:#fff;text-decoration:none;padding:8px 10px;border-radius:8px;opacity:0.95}
+    .grid{max-width:1100px;margin:18px auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
+    .card{background:var(--card);padding:12px;border-radius:10px}
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);align-items:center;justify-content:center}
+    .modal .box{background:#070710;padding:20px;border-radius:12px;max-width:900px;width:94%}
+  </style>
+</head>
+<body>
+  <!-- header copied from index.html to keep IDs for header.js -->
+  <header>
+    <div class="topbar">
+      <div style="display:flex;gap:12px;align-items:center">
+        <img src="https://images.unsplash.com/photo-1606813902879-3b9a4b6f2f77?auto=format&fit=crop&w=600&q=60" alt="logo" style="width:44px;height:44px;border-radius:8px;object-fit:cover">
+        <div><h1 style="margin:0;color:var(--accent);font-size:18px">GameCatalog</h1></div>
+      </div>
+      <nav class="site-nav" aria-label="Navegación principal" style="margin-left:18px;display:flex;gap:10px;align-items:center">
+        <a href="index.html">Inicio</a>
+        <div class="catalog-menu" style="position:relative;display:flex;align-items:center;gap:6px">
+          <a href="catalogo.html" id="catalogLink">Catálogo</a>
+          <button id="catalogToggle" aria-haspopup="true" aria-expanded="false" aria-label="Abrir opciones de catálogo">▾</button>
+          <div id="catalogSubmenu" role="menu" aria-label="Opciones de catálogo" style="position:absolute;top:40px;left:0;display:none;min-width:200px;z-index:40">
+            <a role="menuitem" href="catalogo.html">Ver todo</a>
+            <a role="menuitem" href="#offers" data-action="offers">Ofertas</a>
+            <a role="menuitem" href="#new" data-action="new">Nuevos lanzamientos</a>
+            <button role="menuitem" id="submenuFavorites">Favoritos</button>
+            <div style="border-top:1px solid rgba(255,255,255,0.03);margin:6px 0"></div>
+            <div style="padding:6px 8px;color:#aaa;font-size:13px">Filtrar por plataforma</div>
+            <select id="submenuPlatform" style="width:100%;padding:6px;border-radius:6px;background:#111;color:#fff;border:none;margin-top:6px">
+              <option value="all">Todas</option>
+              <option value="PC">PC</option>
+              <option value="PS5">PS5</option>
+              <option value="Xbox">Xbox</option>
+              <option value="Switch">Switch</option>
+            </select>
+          </div>
+        </div>
+        <a href="accion.html">Acción</a>
+        <a href="terror.html">Terror</a>
+        <a href="aventura.html">Aventura</a>
+        <a href="rpg.html">RPG</a>
+        <a href="estrategia.html">Estrategia</a>
+        <a href="deportes.html">Deportes</a>
+      </nav>
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+        <div id="favCounter">❤ <span id="favCount">0</span><span id="favLive" class="sr-only" aria-live="polite"></span></div>
+        <button id="userBtn">Entrar</button>
+      </div>
+    </div>
+    <nav id="mobileNav" style="display:none;margin-top:8px;padding:8px 18px;">
+      <a href="index.html">Inicio</a>
+      <a href="catalogo.html">Ver todo (Catálogo)</a>
+      <a href="#" id="mobileFavorites">Favoritos</a>
+      <a href="accion.html">Acción</a>
+      <a href="terror.html">Terror</a>
+      <a href="aventura.html">Aventura</a>
+      <a href="rpg.html">RPG</a>
+      <a href="estrategia.html">Estrategia</a>
+      <a href="deportes.html">Deportes</a>
+    </nav>
+  </header>
+
+  <main style="max-width:1100px;margin:28px auto;padding:18px">
+    <h2 style="color:var(--accent)">Terror</h2>
+    <p style="color:#ccc">Juegos de terror y suspense disponibles en el catálogo.</p>
+    <section class="grid" id="catalogGrid"></section>
+  </main>
+
+  <div class="modal" id="modal"><div class="box"><button id="closeModal">&times;</button><div style="display:flex;gap:18px"><img id="modalImg" src="" alt="" style="width:300px;height:170px;object-fit:cover;border-radius:8px"><div><h2 id="modalTitle" style="color:var(--accent)"></h2><div id="modalPrice" style="color:var(--accent)"></div><p id="modalDesc" style="color:#ddd"></p><div style="margin-top:12px"><button id="buyBtn" style="background:var(--accent);color:#042;border:none;padding:10px;border-radius:8px;cursor:pointer">Comprar en Steam</button></div></div></div></div></div>
+
+  <script>
+    // Full catalog (same data as index) - keep in sync manually
+    const catalog = [
+      {nombre:'Counter-Strike 2',categoria:'accion',precio:19.99,imagen:'https://cdn.cloudflare.steamstatic.com/steam/apps/730/header.jpg',descripcion:'Shooter táctico competitivo.',steamAppId:730,plataforma:['PC'],rating:9.0},
+      {nombre:'Apex Legends',categoria:'accion',precio:0,imagen:'https://cdn.cloudflare.steamstatic.com/steam/apps/1172470/header.jpg',descripcion:'Battle royale de héroes.',steamAppId:1172470,plataforma:['PC','PS5','Xbox'],rating:8.2},
+      {nombre:'Cyberpunk 2077',categoria:'aventura',precio:29.99,imagen:'https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg',descripcion:'RPG futurista.',steamAppId:1091500,plataforma:['PC','PS5','Xbox'],rating:7.5},
+      {nombre:'FIFA 24',categoria:'deportes',precio:59.99,imagen:'https://cdn.cloudflare.steamstatic.com/steam/apps/2195250/header.jpg',descripcion:'Simulador de fútbol.',steamAppId:2195250,plataforma:['PC','PS5','Xbox'],rating:7.8},
+      {nombre:'DOOM Eternal',categoria:'accion',precio:39.99,imagen:'https://cdn.cloudflare.steamstatic.com/steam/apps/782330/header.jpg',descripcion:'Shooter frenético.',steamAppId:782330,plataforma:['PC','PS5','Xbox'],rating:8.6},
+      {nombre:'The Witcher 3',categoria:'rpg',precio:24.99,imagen:'https://cdn.cloudflare.steamstatic.com/steam/apps/292030/header.jpg',descripcion:'RPG épico.',steamAppId:292030,plataforma:['PC','PS5','Xbox'],rating:9.5},
+      {nombre:'Rocket League',categoria:'deportes',precio:19.99,imagen:'https://cdn.cloudflare.steamstatic.com/steam/apps/252950/header.jpg',descripcion:'Fútbol con coches.',steamAppId:252950,plataforma:['PC','PS5','Xbox'],rating:8.0},
+      {nombre:'Sekiro: Shadows Die Twice',categoria:'accion',precio:49.99,imagen:'https://cdn.cloudflare.steamstatic.com/steam/apps/814380/header.jpg',descripcion:'Acción desafiante.',steamAppId:814380,plataforma:['PC','PS5','Xbox'],rating:9.0},
+      {nombre:'Borderlands 3',categoria:'accion',precio:39.99,imagen:'https://cdn.cloudflare.steamstatic.com/steam/apps/397540/header.jpg',descripcion:'Shooter-looter con humor.',steamAppId:397540,plataforma:['PC','PS5','Xbox'],rating:7.9},
+      {nombre:'Civilization VI',categoria:'estrategia',precio:29.99,imagen:'https://cdn.cloudflare.steamstatic.com/steam/apps/289070/header.jpg',descripcion:'Estrategia por turnos.',steamAppId:289070,plataforma:['PC','Switch'],rating:8.4}
+    ];
+
+    const grid = document.getElementById('catalogGrid');
+    const modal = document.getElementById('modal');
+    const closeModal = document.getElementById('closeModal');
+    const modalImg = document.getElementById('modalImg');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalPrice = document.getElementById('modalPrice');
+    const modalDesc = document.getElementById('modalDesc');
+    const buyBtn = document.getElementById('buyBtn');
+
+    let favorites = JSON.parse(localStorage.getItem('favorites')||'[]');
+    let currentPage = 1; const pageSize = 12;
+
+    function updateFavCounter(){ const fc = document.getElementById('favCount'); if(fc) fc.textContent = (favorites&&favorites.length)?favorites.length:0; const live = document.getElementById('favLive'); if(live) live.textContent = (favorites&&favorites.length)?`Tienes ${favorites.length} favoritos`:'No tienes favoritos'; }
+    updateFavCounter();
+
+    function renderCatalog(items){
+      grid.innerHTML = '';
+      if(!items || items.length===0){ grid.innerHTML = '<div style="color:#ccc">No hay juegos en esta categoría todavía.</div>'; return; }
+      items.forEach((item,idx)=>{
+        const card = document.createElement('div'); card.className='card';
+        const favActive = favorites.includes(item.nombre)?'★':'☆';
+        card.innerHTML = `
+          <img src="${item.imagen}" alt="${item.nombre}" style="width:100%;height:120px;object-fit:cover;border-radius:8px">
+          <h3 style="color:var(--accent);margin:8px 0">${item.nombre}</h3>
+          <div style="color:#ccc">${item.plataforma?item.plataforma.join(', '):''} — Rating: ${item.rating}</div>
+          <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
+            <div style="color:var(--accent);font-weight:700">${item.precio===0?'<span style=\"background:#ffb86b;color:#042;padding:4px 8px;border-radius:8px;font-weight:700\">Gratis</span>':'$'+item.precio.toFixed(2)}</div>
+            <div>
+              <button class="fav-btn" data-name="${item.nombre}" style="background:transparent;border:none;color:var(--accent);font-size:1.2em;cursor:pointer">${favActive}</button>
+              <button class="buy-inline" style="background:#00bfa5;color:#042;border:none;padding:6px 10px;border-radius:8px;cursor:pointer">Comprar</button>
+            </div>
+          </div>
+        `;
+        const favBtn = card.querySelector('.fav-btn'); favBtn.addEventListener('click', e=>{ e.stopPropagation(); toggleFavorite(item.nombre,favBtn); });
+        const buyBtnInline = card.querySelector('.buy-inline'); buyBtnInline.addEventListener('click', e=>{ e.stopPropagation(); if(item.steamAppId) window.open('https://store.steampowered.com/app/'+item.steamAppId,'_blank'); else window.open('https://store.steampowered.com/search/?term='+encodeURIComponent(item.nombre),'_blank'); });
+        card.addEventListener('click', ()=> openModal(item));
+        grid.appendChild(card);
+      });
+    }
+
+    function openModal(item){ modalImg.src = item.imagen; modalTitle.textContent = item.nombre; modalPrice.textContent = item.precio===0?'Gratis':'$'+item.precio.toFixed(2); modalDesc.textContent = item.descripcion + '\n\nPlataformas: ' + (item.plataforma?item.plataforma.join(', '):'') + ' — Rating: ' + item.rating; buyBtn.onclick = ()=>{ if(item.steamAppId) window.open('https://store.steampowered.com/app/' + item.steamAppId,'_blank'); else window.open('https://store.steampowered.com/search/?term='+encodeURIComponent(item.nombre),'_blank'); }; modal.style.display='flex'; }
+    closeModal.addEventListener('click', ()=> modal.style.display='none');
+    modal.addEventListener('click', e=>{ if(e.target===modal) modal.style.display='none'; });
+
+    function toggleFavorite(name, btn){ const idx = favorites.indexOf(name); if(idx===-1){ favorites.push(name); btn.textContent='★'; } else { favorites.splice(idx,1); btn.textContent='☆'; } localStorage.setItem('favorites', JSON.stringify(favorites)); updateFavCounter(); }
+
+    // Expose globals for header.js to use
+    window.catalog = catalog;
+    window.favorites = favorites;
+    window.renderCatalog = renderCatalog;
+    window.applyFilters = function(){ renderCatalog(window.catalog.filter(i=>i.categoria==='terror')); };
+    window.updateFavCounter = updateFavCounter;
+    window.currentPage = currentPage;
+
+    // Initial render: only terror category
+    renderCatalog(catalog.filter(i=>i.categoria==='terror'));
+  </script>
+  <script src="header.js"></script>
+  <footer style="max-width:1100px;margin:24px auto;color:#aaa;padding:18px;font-size:13px;text-align:center">Enlaces: <a href="index.html" style="color:var(--accent)">Inicio</a> • <a href="catalogo.html" style="color:var(--accent)">Catálogo</a></footer>
+</body>
+</html>

@@ -7,21 +7,97 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         body{margin:0;font-family:'Orbitron',Arial,Helvetica,sans-serif;background:#0b0b12;color:#fff}
-        header{background:rgba(20,20,40,0.9);padding:16px;text-align:center}
+        /* header shared styles */
+        header{padding:12px 20px;background:linear-gradient(90deg, rgba(0,0,0,0.18), rgba(0,0,0,0.02));}
+        .topbar{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:16px}
+        .logo{display:flex;align-items:center;gap:12px}
+        .logo img{width:48px;height:48px;border-radius:8px;object-fit:cover}
+        .logo h1{font-size:20px;margin:0;color:#00ffe7}
+        nav{margin-left:12px}
+        nav a{color:#fff;text-decoration:none;margin-right:12px;opacity:0.9}
+        nav a:hover{opacity:1;color:#00ffe7}
+        .header-actions{margin-left:auto;display:flex;align-items:center;gap:12px}
+        .fav-counter{background:#071022;padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);cursor:pointer}
+        .user-btn{background:transparent;border:1px solid #00ffe7;color:#00ffe7;padding:8px 10px;border-radius:8px;cursor:pointer}
+        :focus{outline:none}
+        .focus-ring{box-shadow:0 0 0 3px rgba(0,255,231,0.12);border-radius:8px}
+        .sr-only{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
         .grid{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;padding:30px}
-        .card{background:rgba(30,30,60,0.9);border-radius:12px;padding:16px;width:260px;box-shadow:0 6px 24px #000a;cursor:pointer}
+    .card{background:rgba(30,30,60,0.9);border-radius:12px;padding:16px;width:260px;box-shadow:0 6px 24px #000a;cursor:pointer}
+    .card:hover{transform:translateY(-6px);transition:transform .18s ease}
+    .cta:hover{transform:translateY(-3px) scale(1.02);transition:transform .12s ease}
+    .card.animate-in{opacity:0;transform:translateY(6px);animation:cardIn .32s forwards ease}
+    @keyframes cardIn{to{opacity:1;transform:translateY(0)}}
+    .chip{display:inline-block;background:#0f1720;color:#9fd; padding:4px 8px;border-radius:12px;font-size:12px;margin-right:6px}
+    .badge{display:inline-block;background:#ffb86b;color:#042;padding:4px 8px;border-radius:8px;font-weight:700;margin-left:8px}
         .card img{width:100%;height:140px;object-fit:cover;border-radius:8px}
         .precio{color:#00ffe7;font-weight:700;margin-top:8px}
         .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);align-items:center;justify-content:center}
         .modal-content{background:rgba(18,18,30,0.98);padding:24px;border-radius:12px;max-width:800px;width:92%}
         .close{position:absolute;right:12px;top:8px;background:#ff4c4c;border:none;border-radius:50%;width:34px;height:34px;color:#fff}
+        /* submenu transition and focus styles */
+        #catalogSubmenu{display:none;opacity:0;transform:translateY(-6px);transition:opacity .18s ease, transform .18s ease}
+        #catalogSubmenu.open{display:block;opacity:1;transform:translateY(0)}
+        #catalogSubmenu [role="menuitem"]:focus{outline:none;background:rgba(255,255,255,0.03);border-radius:6px}
+    #catalogToggle{transition:transform .18s ease;display:inline-flex;align-items:center;justify-content:center}
+    #catalogToggle.open{transform:rotate(180deg)}
     </style>
 </head>
 <body>
-    <header>
-        <h1 style="color:#00ffe7;margin:6px 0">Juegos de Acción</h1>
-        <a href="index.html" style="color:#fff;text-decoration:none;background:#00ffe7;padding:8px 12px;border-radius:8px">Volver</a>
-    </header>
+        <header>
+                <div class="topbar">
+                    <div class="logo">
+                        <img src="https://images.unsplash.com/photo-1606813902879-3b9a4b6f2f77?auto=format&fit=crop&w=600&q=60" alt="logo">
+                        <div>
+                            <h1>Juegos de Acción</h1>
+                            <div style="font-size:12px;opacity:0.8">Explora los mejores títulos de acción</div>
+                        </div>
+                    </div>
+
+                    <nav class="site-nav" aria-label="Navegación principal">
+                      <a href="index.html">Inicio</a>
+                      <div class="catalog-menu" style="position:relative;display:flex;align-items:center;gap:6px">
+                        <a href="catalogo.html" id="catalogLink" style="color:#fff;text-decoration:none;padding:8px 6px;border-radius:6px">Catálogo</a>
+                        <button id="catalogToggle" aria-haspopup="true" aria-expanded="false" aria-label="Abrir opciones de catálogo" style="background:transparent;border:none;color:#fff;padding:6px 8px;border-radius:6px;cursor:pointer">▾</button>
+                        <div id="catalogSubmenu" role="menu" aria-label="Opciones de catálogo" style="position:absolute;top:40px;left:0;background:#071022;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:8px;display:none;min-width:200px;z-index:40">
+                          <a role="menuitem" href="catalogo.html" style="display:block;padding:8px;color:#fff;text-decoration:none">Ver todo</a>
+                          <a role="menuitem" href="#offers" data-action="offers" style="display:block;padding:8px;color:#fff;text-decoration:none">Ofertas</a>
+                          <a role="menuitem" href="#new" data-action="new" style="display:block;padding:8px;color:#fff;text-decoration:none">Nuevos lanzamientos</a>
+                          <button role="menuitem" id="submenuFavorites" style="display:block;padding:8px;background:transparent;border:none;color:#fff;text-align:left;width:100%;cursor:pointer">Favoritos</button>
+                          <div style="border-top:1px solid rgba(255,255,255,0.03);margin:6px 0"></div>
+                          <div style="padding:6px 8px;color:#aaa;font-size:13px">Filtrar por plataforma</div>
+                          <select id="submenuPlatform" style="width:100%;padding:6px;border-radius:6px;background:#111;color:#fff;border:none;margin-top:6px">
+                            <option value="all">Todas</option>
+                            <option value="PC">PC</option>
+                            <option value="PS5">PS5</option>
+                            <option value="Xbox">Xbox</option>
+                            <option value="Switch">Switch</option>
+                          </select>
+                        </div>
+                      </div>
+                      <a href="accion.html">Acción</a>
+                      <a href="#">Ofertas</a>
+                    </nav>
+
+                    <div class="header-actions">
+                        <form id="headerSearchForm" role="search" aria-label="Buscar juegos" style="display:flex;gap:8px;align-items:center">
+                            <label for="headerSearch" class="sr-only">Buscar juegos</label>
+                            <input id="headerSearch" type="search" placeholder="Buscar juegos..." style="padding:8px;border-radius:8px;border:none;background:#111;color:#fff;min-width:180px">
+                        </form>
+                        <select id="platformFilter" class="platform-select" aria-label="Filtrar por plataforma" style="margin-right:8px;padding:8px;border-radius:6px;background:#111;color:#fff;border:none">
+                          <option value="all">Todas las plataformas</option>
+                          <option value="PC">PC</option>
+                          <option value="PS5">PS5</option>
+                          <option value="Xbox">Xbox</option>
+                          <option value="Switch">Switch</option>
+                        </select>
+                                                <div id="favCounter" class="fav-counter" title="Ver favoritos" role="button" tabindex="0" aria-pressed="false">Favoritos: <span id="favCount">0</span>
+                                                    <span id="favLive" class="sr-only" aria-live="polite"></span>
+                                                </div>
+                        <button id="userBtn" class="user-btn" aria-haspopup="dialog">Registrarse / Iniciar</button>
+                    </div>
+                </div>
+        </header>
     <main>
         <div class="grid" id="grid"></div>
     </main>
@@ -66,21 +142,51 @@
     ];
 
     const grid = document.getElementById('grid');
+    // header elements (shared behavior)
+    const headerSearch = document.getElementById('headerSearch');
+    const headerSearchForm = document.getElementById('headerSearchForm');
+    const favCounter = document.getElementById('favCounter');
+    const favCount = document.getElementById('favCount');
+    const userBtn = document.getElementById('userBtn');
+    let favorites = JSON.parse(localStorage.getItem('favorites')||'[]');
+
+    function updateFavCounter(){ favCount.textContent = (favorites && favorites.length)? favorites.length : 0; const live = document.getElementById('favLive'); if(live) live.textContent = (favorites && favorites.length)? `Tienes ${favorites.length} favoritos` : 'No tienes favoritos'; }
+    updateFavCounter();
+
+    headerSearchForm.addEventListener('submit', (e)=>{ e.preventDefault(); const q = headerSearch.value.trim(); if(!q) return window.location.href='catalogo.html'; window.location.href = 'catalogo.html?search=' + encodeURIComponent(q); });
+    headerSearch.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ headerSearchForm.dispatchEvent(new Event('submit')); } });
+
+    favCounter.addEventListener('click', ()=>{ if(!favorites || favorites.length===0){ alert('No tienes favoritos aún. Marca juegos con el botón ☆/★ para agregarlos.'); return; } const favItems = accionGames.filter(i=>favorites.includes(i.nombre)); grid.innerHTML=''; favItems.forEach(g=>{ const card = document.createElement('div'); card.className='card'; card.tabIndex=0; card.innerHTML = `<img src="${g.imagen}" alt="${g.nombre}"><h3 style="color:#00ffe7;margin:8px 0">${g.nombre}</h3><div class="precio">${g.precio}</div>`; card.addEventListener('click', ()=>openModal(g)); grid.appendChild(card); }); });
+    favCounter.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ' || e.key==='Spacebar'){ e.preventDefault(); favCounter.click(); } });
+    favCounter.addEventListener('focus', ()=> favCounter.classList.add('focus-ring')); favCounter.addEventListener('blur', ()=> favCounter.classList.remove('focus-ring'));
+    userBtn.addEventListener('focus', ()=> userBtn.classList.add('focus-ring')); userBtn.addEventListener('blur', ()=> userBtn.classList.remove('focus-ring'));
+    function saveFavorites(){ localStorage.setItem('favorites', JSON.stringify(favorites)); updateFavCounter(); }
+
     function render(){
         grid.innerHTML = '';
         const juegos = [...accionGames].sort((a,b)=>a.nombre.localeCompare(b.nombre));
-        juegos.forEach(g=>{
+        juegos.forEach((g, idx)=>{
             const card = document.createElement('div');
             card.className = 'card';
             card.tabIndex = 0;
+            const favActive = favorites.includes(g.nombre) ? '★' : '☆';
+            const chips = g.plataforma ? (Array.isArray(g.plataforma) ? g.plataforma : []).map(p=>`<span class="chip">${p}</span>`).join(' ') : '';
+            const rating = g.rating ? `<div style="margin-top:6px;color:#ccc;font-size:0.9em">Rating: ${g.rating}</div>` : '';
             card.innerHTML = `
                 <img src="${g.imagen}" alt="${g.nombre}">
                 <h3 style="color:#00ffe7;margin:8px 0">${g.nombre}</h3>
                 <div class="precio">${g.precio}</div>
+                <div style="margin-top:6px">${chips}</div>
+                ${rating}
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><button class="fav-btn" data-name="${g.nombre}" style="background:transparent;border:none;color:#00ffe7;font-size:1.2em;cursor:pointer">${favActive}</button><button class="ver-btn" style="background:#00ffe7;color:#042;border:none;padding:6px 10px;border-radius:8px;cursor:pointer">Ver</button></div>
             `;
-            card.addEventListener('click', ()=>openModal(g));
+            card.querySelector('.ver-btn').addEventListener('click', ()=>openModal(g));
+            card.querySelector('.fav-btn').addEventListener('click', (e)=>{ e.stopPropagation(); const name = g.nombre; const idx = favorites.indexOf(name); if(idx===-1){ favorites.push(name); e.target.textContent='★'; } else { favorites.splice(idx,1); e.target.textContent='☆'; } saveFavorites(); });
             grid.appendChild(card);
+            // animate-in with small stagger
+            requestAnimationFrame(()=>{ setTimeout(()=> card.classList.add('animate-in'), idx * 36); });
         });
+            
     }
     function openModal(g){
         document.getElementById('m-img').src = g.imagen;
@@ -117,5 +223,26 @@
     document.getElementById('modal').addEventListener('click', (e)=>{ if(e.target===document.getElementById('modal')) document.getElementById('modal').style.display='none'; });
     render();
     </script>
+    <script>
+        // expose page globals for header.js
+        window.catalog = accionGames; // header.js expects window.catalog
+        window.favorites = favorites;
+        window.renderCatalog = function(items){
+            // render a simple grid for action page (reuse existing render())
+            grid.innerHTML = '';
+            items.forEach(g=>{
+                const card = document.createElement('div'); card.className='card'; card.tabIndex=0;
+                card.innerHTML = `<img src="${g.imagen}" alt="${g.nombre}"><h3 style="color:#00ffe7;margin:8px 0">${g.nombre}</h3><div class="precio">${g.precio}</div>`;
+                card.addEventListener('click', ()=>openModal(g));
+                grid.appendChild(card);
+            });
+        };
+        if(typeof window.updateFavCounter !== 'function') window.updateFavCounter = function(){ const el=document.getElementById('favCount'); if(el) el.textContent = (favorites && favorites.length)? favorites.length : 0; };
+    </script>
+    <script src="header.js"></script>
+        <footer style="max-width:1100px;margin:24px auto;color:#aaa;padding:18px;font-size:13px;text-align:center">
+                        <div style="margin-bottom:8px">Enlaces rápidos: <a href="index.html" style="color:var(--accent)">Inicio</a> • <a href="catalogo.html" style="color:var(--accent)">Catálogo</a></div>
+                        <div>Créditos: Demo educativo — imágenes públicas. Proyecto Abraham-13M.</div>
+        </footer>
 </body>
 </html>
