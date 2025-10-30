@@ -6,32 +6,67 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Herbolario Verde Vida - Productos Naturales en Madrid</title>
 	<link rel="stylesheet" href="styles.css">
-	<script src="main.js"></script>
+		<script src="main.js" defer></script>
+		<script src="scripts/chatbot.js" defer></script>
+
+		<!-- JSON-LD: Organization + featured products for SEO -->
+		<script type="application/ld+json">
+		{
+		  "@context": "https://schema.org",
+		  "@type": "Organization",
+		  "name": "Herbolario Verde Vida",
+		  "url": "https://example.org/",
+		  "logo": "https://example.org/assets/images/logo.svg",
+		  "telephone": "+34 600 123 456",
+		  "sameAs": ["https://www.instagram.com/","https://www.facebook.com/"],
+		  "address": {
+		    "@type": "PostalAddress",
+		    "addressLocality": "Madrid",
+		    "streetAddress": "C/ Salud 12"
+		  },
+		  "containsPlace": []
+		}
+		</script>
 </head>
 
-<body>
-	<!-- Panel de estado para desarrollo: muestra la configuración actual de la landing -->
+<body id="top">
+	<!-- Header: logo, nombre, búsqueda y navegación -->
+	<header class="container site-header" itemscope itemtype="http://schema.org/Organization">
+		<div class="header-left" style="display:flex;align-items:center;gap:12px">
+			<a href="#top" aria-label="Ir al inicio" class="logo-link">
+				<img src="assets/images/logo.svg" alt="Herbolario Verde Vida" style="height:48px;" itemprop="logo"
+				onerror="this.onerror=null;this.style.display='none'">
+			</a>
+			<div>
+				<div style="font-weight:800;font-size:18px" itemprop="name">Herbolario Verde Vida</div>
+				<div style="font-size:12px;color:var(--muted)" itemprop="description">Madrid — Productos naturales</div>
+				<meta itemprop="telephone" content="+34 600 123 456" />
+				<meta itemprop="email" content="info@example.com" />
+			</div>
+		</div>
 
+		<nav aria-label="Menú principal">
+			<ul>
+				<li><a href="#productos">Productos</a></li>
+				<li><a href="#ofertas">Ofertas</a></li>
+				<li><a href="#testimonios">Testimonios</a></li>
+				<li><a href="#contacto">Contacto</a></li>
+				<li><a href="#contacto" class="btn-primary" style="padding:8px 12px">Suscribirse</a></li>
+			</ul>
+		</nav>
 
-	<img src="assets/images/logo.svg" alt="Herbolario Verde Vida" style="height:48px;"
-		onerror="this.onerror=null;this.style.display='none'">
-	<div>
-		<div style="font-weight:800;font-size:18px">Herbolario Verde Vida</div>
-		<div style="font-size:12px;color:var(--muted)">Madrid — Productos naturales</div>
-	</div>
-	</div>
-
-	<nav aria-label="Menú principal">
-		<ul>
-			<li><a href="#productos">Productos</a></li>
-			<li><a href="#testimonios">Testimonios</a></li>
-			<li><a href="#contacto">Contacto</a></li>
-			<li><a href="#" class="btn-primary" style="padding:8px 12px">Suscribirse</a></li>
-		</ul>
-	</nav>
+			<div class="header-right" style="display:flex;align-items:center;gap:12px">
+			<div class="search-wrapper">
+				<input id="siteSearch" placeholder="Buscar productos, marcas..." aria-label="Buscar" />
+			</div>
+				<a href="cart.html" class="cart-link" aria-label="Carrito">🛒 <span class="small muted">0,00 €</span></a>
+		</div>
 	</header>
 
 	<main>
+		<!-- Barra de promoción (envío gratuito, ofertas) -->
+		<div class="promo-bar text-center">Envío gratuito a partir de 30€ · Atención personalizada en tienda · 24/48h</div>
+
 		<section class="hero">
 			<div>
 				<span class="eyebrow">Bienestar natural</span>
@@ -45,19 +80,174 @@
 					tu objetivo.</p>
 			</div>
 
-			<aside class="hero-card" aria-hidden>
-				<img src="assets/images/hero.jpg" alt="Frascos de aceites esenciales y plantas"
-					onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1517976487492-1d6c2b2b19ac?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=placeholder'" />
-				<div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
-					<div>
-						<strong>Especial de la semana</strong>
-						<div class="small">Aceite esencial de lavanda — calma y equilibrio</div>
-					</div>
-					<div>
-						<button class="btn-primary">Comprar</button>
-					</div>
+			<!-- aside removed: 'Especial de la semana' was removed per request -->
+		</section>
+
+		<!-- Trust / beneficios (envío, asesoramiento, pago seguro) -->
+		<div class="container trust">
+			<div class="trust-item">
+				<div class="trust-ico">🚚</div>
+				<div>
+					<strong>Envío 24/48h</strong>
+					<div class="small muted">Gratis a partir de 30€</div>
 				</div>
-			</aside>
+			</div>
+			<div class="trust-item">
+				<div class="trust-ico">💬</div>
+				<div>
+					<strong>Asesoramiento</strong>
+					<div class="small muted">Gratuito en tienda y online</div>
+				</div>
+			</div>
+			<div class="trust-item">
+				<div class="trust-ico">🔒</div>
+				<div>
+					<strong>Pago seguro</strong>
+					<div class="small muted">TPV y pasarelas seguras</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Ofertas destacadas -->
+		<section id="ofertas">
+			<h2>Ofertas</h2>
+			<!-- carousel wrapper -->
+			<div class="offers-wrap" style="margin-top:12px">
+				<button type="button" class="offers-prev" aria-label="Anterior">‹</button>
+				<div class="offers-carousel" role="list">
+					<!-- Nueva selección de 10 productos para el carrusel -->
+					<article class="product" role="listitem" itemscope itemtype="http://schema.org/Product" data-title="infusión manzanilla relajante">
+						<span class="badge">-10%</span>
+						<a href="products/manzanilla.html"><img src="assets/images/R.jpg" alt="Infusión de manzanilla" itemprop="image" loading="lazy"/></a>
+						<h4 itemprop="name">Infusión de manzanilla</h4>
+						<div class="price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+							<meta itemprop="priceCurrency" content="EUR" />
+							<span itemprop="price">3.50</span>
+							<span class="muted">3,90 €</span>
+						</div>
+																		<a class="btn-primary" href="products/manzanilla-oferta.html" style="margin-top:12px;display:inline-block">Comprar</a>
+						<button class="btn-add-cart" data-id="manzanilla" data-name="Infusión de manzanilla" data-price="3.50" style="margin-top:12px;margin-left:8px">Añadir al carrito</button>
+					</article>
+
+					<article class="product" role="listitem" itemscope itemtype="http://schema.org/Product" data-title="aceite esencial romero estimulante">
+						<span class="badge">-12%</span>
+						<a href="products/romero.html"><img src="assets/images/R%20(1).jpg" alt="Aceite esencial de romero" itemprop="image" loading="lazy"/></a>
+						<h4 itemprop="name">Aceite esencial de romero</h4>
+						<div class="price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+							<meta itemprop="priceCurrency" content="EUR" />
+							<span itemprop="price">8.90</span>
+							<span class="muted">10,20 €</span>
+						</div>
+																		<a class="btn-primary" href="products/romero-oferta.html" style="margin-top:12px;display:inline-block">Comprar</a>
+						<button class="btn-add-cart" data-id="romero" data-name="Aceite esencial de romero" data-price="8.90" style="margin-top:12px;margin-left:8px">Añadir al carrito</button>
+					</article>
+
+					<article class="product" role="listitem" itemscope itemtype="http://schema.org/Product" data-title="suplemento valeriana sueño natural">
+						<span class="badge">-15%</span>
+						<a href="products/valeriana.html"><img src="assets/images/R%20(2).jpg" alt="Suplemento de valeriana" itemprop="image" loading="lazy"/></a>
+						<h4 itemprop="name">Suplemento de valeriana</h4>
+						<div class="price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+							<meta itemprop="priceCurrency" content="EUR" />
+							<span itemprop="price">12.50</span>
+							<span class="muted">14,70 €</span>
+						</div>
+																		<a class="btn-primary" href="products/valeriana-oferta.html" style="margin-top:12px;display:inline-block">Comprar</a>
+						<button class="btn-add-cart" data-id="valeriana" data-name="Suplemento de valeriana" data-price="12.50" style="margin-top:12px;margin-left:8px">Añadir al carrito</button>
+					</article>
+
+					<article class="product" role="listitem" itemscope itemtype="http://schema.org/Product" data-title="infusión tomillo digestivo">
+						<span class="badge">-8%</span>
+						<a href="products/tomillo.html"><img src="assets/images/OIP%20(2).webp" alt="Infusión de tomillo" itemprop="image" loading="lazy"/></a>
+						<h4 itemprop="name">Infusión de tomillo</h4>
+						<div class="price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+							<meta itemprop="priceCurrency" content="EUR" />
+							<span itemprop="price">3.80</span>
+							<span class="muted">4,10 €</span>
+						</div>
+																		<a class="btn-primary" href="products/tomillo-oferta.html" style="margin-top:12px;display:inline-block">Comprar</a>
+						<button class="btn-add-cart" data-id="tomillo" data-name="Infusión de tomillo" data-price="3.80" style="margin-top:12px;margin-left:8px">Añadir al carrito</button>
+					</article>
+
+					<article class="product" role="listitem" itemscope itemtype="http://schema.org/Product" data-title="aceite esencial eucalipto respiratorio">
+						<span class="badge">-11%</span>
+						<a href="products/eucalipto.html"><img src="assets/images/aceite-esencial-de-eucalipto.jpg" alt="Aceite esencial de eucalipto" itemprop="image" loading="lazy"/></a>
+						<h4 itemprop="name">Aceite esencial de eucalipto</h4>
+						<div class="price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+							<meta itemprop="priceCurrency" content="EUR" />
+							<span itemprop="price">7.20</span>
+							<span class="muted">8,10 €</span>
+						</div>
+																		<a class="btn-primary" href="products/eucalipto-oferta.html" style="margin-top:12px;display:inline-block">Comprar</a>
+						<button class="btn-add-cart" data-id="eucalipto" data-name="Aceite esencial de eucalipto" data-price="7.20" style="margin-top:12px;margin-left:8px">Añadir al carrito</button>
+					</article>
+
+					<article class="product" role="listitem" itemscope itemtype="http://schema.org/Product" data-title="suplemento jengibre energizante">
+						<span class="badge">-13%</span>
+						<a href="products/jengibre.html"><img src="assets/images/HF_22_Jengibre_Capsulas.jpg" alt="Suplemento de jengibre" itemprop="image" loading="lazy"/></a>
+						<h4 itemprop="name">Suplemento de jengibre</h4>
+						<div class="price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+							<meta itemprop="priceCurrency" content="EUR" />
+							<span itemprop="price">11.00</span>
+							<span class="muted">12,70 €</span>
+						</div>
+																		<a class="btn-primary" href="products/jengibre-oferta.html" style="margin-top:12px;display:inline-block">Comprar</a>
+						<button class="btn-add-cart" data-id="jengibre" data-name="Suplemento de jengibre" data-price="11.00" style="margin-top:12px;margin-left:8px">Añadir al carrito</button>
+					</article>
+
+					<article class="product" role="listitem" itemscope itemtype="http://schema.org/Product" data-title="infusión menta fresca">
+						<span class="badge">-7%</span>
+						<a href="products/menta.html"><img src="assets/images/menta-infusiones-1024x576.webp" alt="Infusión de menta" itemprop="image" loading="lazy"/></a>
+						<h4 itemprop="name">Infusión de menta</h4>
+						<div class="price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+							<meta itemprop="priceCurrency" content="EUR" />
+							<span itemprop="price">3.20</span>
+							<span class="muted">3,45 €</span>
+						</div>
+																		<a class="btn-primary" href="products/menta-oferta.html" style="margin-top:12px;display:inline-block">Comprar</a>
+						<button class="btn-add-cart" data-id="menta" data-name="Infusión de menta" data-price="3.20" style="margin-top:12px;margin-left:8px">Añadir al carrito</button>
+					</article>
+
+					<article class="product" role="listitem" itemscope itemtype="http://schema.org/Product" data-title="propóleo gotas defensas naturales">
+						<span class="badge">-14%</span>
+						<a href="products/propoleo.html"><img src="assets/images/OIP.webp" alt="Gotas de propóleo" itemprop="image" loading="lazy"/></a>
+						<h4 itemprop="name">Gotas de propóleo</h4>
+						<div class="price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+							<meta itemprop="priceCurrency" content="EUR" />
+							<span itemprop="price">9.40</span>
+							<span class="muted">10,95 €</span>
+						</div>
+																		<a class="btn-primary" href="products/propoleo-oferta.html" style="margin-top:12px;display:inline-block">Comprar</a>
+						<button class="btn-add-cart" data-id="propoleo" data-name="Gotas de propóleo" data-price="9.40" style="margin-top:12px;margin-left:8px">Añadir al carrito</button>
+					</article>
+
+					<article class="product" role="listitem" itemscope itemtype="http://schema.org/Product" data-title="aloe vera gel regenerador">
+						<span class="badge">-9%</span>
+						<a href="products/aloe.html"><img src="assets/images/OIP%20(1).webp" alt="Gel de Aloe Vera" itemprop="image" loading="lazy"/></a>
+						<h4 itemprop="name">Gel de Aloe Vera</h4>
+						<div class="price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+							<meta itemprop="priceCurrency" content="EUR" />
+							<span itemprop="price">6.80</span>
+							<span class="muted">7,50 €</span>
+						</div>
+																		<a class="btn-primary" href="products/aloe-oferta.html" style="margin-top:12px;display:inline-block">Comprar</a>
+						<button class="btn-add-cart" data-id="aloe" data-name="Gel de Aloe Vera" data-price="6.80" style="margin-top:12px;margin-left:8px">Añadir al carrito</button>
+					</article>
+
+					<article class="product" role="listitem" itemscope itemtype="http://schema.org/Product" data-title="salvia infusion y uso tradicional">
+						<span class="badge">-6%</span>
+						<a href="products/salvia.html"><img src="assets/images/R%20(3).jpg" alt="Salvia en infusión" itemprop="image" loading="lazy"/></a>
+						<h4 itemprop="name">Salvia (infusión)</h4>
+						<div class="price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+							<meta itemprop="priceCurrency" content="EUR" />
+							<span itemprop="price">3.60</span>
+							<span class="muted">3,85 €</span>
+						</div>
+																		<a class="btn-primary" href="products/salvia-oferta.html" style="margin-top:12px;display:inline-block">Comprar</a>
+						<button class="btn-add-cart" data-id="salvia" data-name="Salvia (infusión)" data-price="3.60" style="margin-top:12px;margin-left:8px">Añadir al carrito</button>
+					</article>
+				</div>
+				<button type="button" class="offers-next" aria-label="Siguiente">›</button>
+			</div>
 		</section>
 
 		<section id="sobre-nosotros">
@@ -81,28 +271,76 @@
 		<section id="productos">
 			<h2>Productos destacados</h2>
 			<div class="grid-3" style="margin-top:12px">
-				<article class="product">
-					<img src="assets/images/lavanda.jpg" alt="Aceite esencial de lavanda"
-						onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1516691862637-9f3d7a8b5c7a?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=placeholder'" />
-					<h4>Aceite esencial de lavanda</h4>
-					<p class="small">Relajante y versátil. Ideal para difusores, masajes y baños. 100% puro y
+				<article class="product" itemscope itemtype="http://schema.org/Product" data-title="aceite esencial lavanda relajante versátil">
+					<picture>
+						<source type="image/webp" srcset="assets/images/aceite%20de%20lavanda.webp">
+						<img src="assets/images/lavanda.jpg?v=2" alt="Aceite esencial de lavanda" loading="lazy"
+							onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1516691862637-9f3d7a8b5c7a?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=placeholder'" itemprop="image" />
+					</picture>
+					<h4 itemprop="name">Aceite esencial de lavanda</h4>
+					<p class="small" itemprop="description">Relajante y versátil. Ideal para difusores, masajes y baños. 100% puro y
 						controlado.</p>
+					<a class="btn-primary" href="products/lavanda.html" style="margin-top:12px;display:inline-block">Ver producto</a>
 				</article>
 
-				<article class="product">
-					<img src="assets/images/curcuma.jpg" alt="Suplementos herbales"
-						onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=placeholder'" />
-					<h4>Suplemento de cúrcuma</h4>
-					<p class="small">Apoya la salud articular y el bienestar general. Fórmula de alta absorción y sin
+				<article class="product" itemscope itemtype="http://schema.org/Product" data-title="suplemento cúrcuma salud articular">
+					<picture>
+						<source type="image/webp" srcset="assets/images/suplemento%20de%20curcuma.webp">
+						<img src="assets/images/curcuma.jpg?v=2" alt="Suplementos de cúrcuma" loading="lazy"
+							onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=placeholder'" itemprop="image" />
+					</picture>
+					<h4 itemprop="name">Suplemento de cúrcuma</h4>
+					<p class="small" itemprop="description">Apoya la salud articular y el bienestar general. Fórmula de alta absorción y sin
 						aditivos innecesarios.</p>
+					<a class="btn-primary" href="products/curcuma.html" style="margin-top:12px;display:inline-block">Ver producto</a>
+				</article>
+
+				<article class="product" itemscope itemtype="http://schema.org/Product" data-title="infusiones relajacion digestión descanso">
+					<picture>
+						<!-- use user's provided image 'infusiones naturales.jpg' -->
+						<img src="assets/images/infusiones%20naturales.jpg?v=2" alt="Infusiones naturales" loading="lazy"
+							onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1506806732259-39c2d0268443?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=placeholder'" itemprop="image" />
+					</picture>
+					<h4 itemprop="name">Infusiones naturales</h4>
+					<p class="small" itemprop="description">Mezclas para relajación, digestión y descanso. Preparadas con plantas seleccionadas
+						y de comercio responsable.</p>
+					<a class="btn-primary" href="products/infusion.html" style="margin-top:12px;display:inline-block">Ver producto</a>
+				</article>
+			</div>
+		</section>
+
+		<!-- Marcas destacadas -->
+		<section id="marcas">
+			<h2>Marcas</h2>
+			<div class="brands-grid" style="margin-top:12px">
+				<a href="#">100% Natural</a>
+				<a href="#">A.Vogel</a>
+				<a href="#">Salus</a>
+				<a href="#">Fritz-Kola</a>
+				<a href="#">Ahimsa</a>
+				<a href="#">Algologie</a>
+			</div>
+		</section>
+
+		<!-- Novedades / Blog breve -->
+		<section id="novedades">
+			<h2>Novedades</h2>
+			<div class="grid-3" style="margin-top:12px">
+				<article class="product">
+					<img src="assets/images/alimentos%20antiinflamatorios.jpg" alt="Alimentos con efectos antiinflamatorios" loading="lazy" />
+					<h4>Alimentos con efectos antiinflamatorios</h4>
+					<p class="small muted">14 abril 2020 · Consejos y recursos</p>
+					<a href="alimentos-antiinflamatorios.html" class="small">Leer más →</a>
 				</article>
 
 				<article class="product">
-					<img src="assets/images/infusion.jpg" alt="Té y plantas secas"
-						onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1506806732259-39c2d0268443?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=placeholder'" />
-					<h4>Infusiones naturales</h4>
-					<p class="small">Mezclas para relajación, digestión y descanso. Preparadas con plantas seleccionadas
-						y de comercio responsable.</p>
+					<picture>
+						<source type="image/webp" srcset="assets/images/hongos%20orientales.webp">
+						<img src="assets/images/hongos%20orientales.webp" alt="Artículo sobre hongos orientales" loading="lazy" />
+					</picture>
+					<h4>La sinergia de los hongos orientales</h4>
+					<p class="small muted">25 marzo 2020 · Blog</p>
+					<a href="hongos-orientales.html" class="small">Leer más →</a>
 				</article>
 			</div>
 		</section>

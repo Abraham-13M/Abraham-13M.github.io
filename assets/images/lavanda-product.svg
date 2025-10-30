@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="Ilustración lavanda">
+  <rect width="100%" height="100%" fill="#f9f7fb"/>
+  <g transform="translate(80,40)">
+    <rect width="160" height="320" rx="12" fill="#fff" stroke="#e6e6e9"/>
+    <g transform="translate(30,40)">
+      <path d="M10 180 C15 100 50 40 70 20" stroke="#7f5aa6" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path d="M40 176 C45 110 80 50 100 30" stroke="#b48fd1" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="90" cy="24" r="6" fill="#7f5aa6"/>
+      <circle cx="70" cy="40" r="5" fill="#b48fd1"/>
+    </g>
+  </g>
+  <text x="270" y="120" font-family="Poppins, Arial" font-size="28" fill="#153b2a">Aceite esencial de lavanda</text>
+  <text x="270" y="150" font-family="Poppins, Arial" font-size="14" fill="#6b6b6b">Relajante • 10 ml • 100% puro</text>
+</svg>

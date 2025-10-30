@@ -83,4 +83,384 @@ document.addEventListener('DOMContentLoaded', function(){
     const present = imgs.filter(n=>{ try{ return !!document.querySelector(`img[src$="${n}"]`); }catch(e){return false;} });
     devImages.textContent = present.length ? present.join(', ') : 'ninguna encontrada';
   }
+
+  // Smooth scroll para enlaces internos (mejora la navegación como en la referencia)
+  document.querySelectorAll('a[href^="#"]').forEach(function(link){
+    link.addEventListener('click', function(e){
+      const href = this.getAttribute('href');
+      if(!href || href === '#') return; // deja comportamiento por defecto
+      try{
+        const target = document.querySelector(href);
+        if(target){
+          e.preventDefault();
+          target.scrollIntoView({behavior:'smooth', block:'start'});
+          // foco accesible
+          target.setAttribute('tabindex','-1');
+          target.focus({preventScroll:true});
+          // actualizar URL sin recargar
+          history.replaceState(null, '', href);
+        }
+      }catch(err){
+        // si hay problema, dejamos comportamiento por defecto
+        console.warn('Smooth scroll failed for', href, err);
+      }
+    });
+  });
+
+  // ---------- BÚSQUEDA CLIENTE (filtrado simple)
+  const searchInput = document.getElementById('siteSearch');
+  const products = Array.from(document.querySelectorAll('.product'));
+  function normalize(s){ return (s||'').toString().toLowerCase(); }
+  function filterProducts(term){
+    const q = normalize(term).trim();
+    if(!q){ products.forEach(p=>p.style.display=''); return; }
+    products.forEach(p=>{
+      const title = normalize(p.getAttribute('data-title') || p.querySelector('[itemprop=name]')?.textContent);
+      const desc = normalize(p.querySelector('[itemprop=description]')?.textContent || '');
+      const hay = (title + ' ' + desc).indexOf(q) !== -1;
+      p.style.display = hay ? '' : 'none';
+    });
+  }
+  if(searchInput){
+    let debounce;
+    searchInput.addEventListener('input', function(e){
+      clearTimeout(debounce);
+      debounce = setTimeout(()=> filterProducts(this.value), 180);
+    });
+    // permitir buscar con Enter
+    searchInput.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ e.preventDefault(); filterProducts(this.value); } });
+  }
+
+  // ---------- CARRUSEL DE OFERTAS (scroll horizontal + arrastrar con ratón/touch)
+  const offersWrap = document.querySelector('.offers-wrap');
+  if (offersWrap) {
+    const carousel = offersWrap.querySelector('.offers-carousel');
+    const prev = offersWrap.querySelector('.offers-prev');
+    const next = offersWrap.querySelector('.offers-next');
+
+    if (carousel) {
+      // compute an approximate item width dynamically (first item + gap)
+      const firstItem = carousel.querySelector('.product');
+      const gap = parseFloat(getComputedStyle(carousel).gap) || 18;
+      const itemWidth = firstItem ? Math.round(firstItem.getBoundingClientRect().width + gap) : 320;
+
+      // arrow buttons scroll by one item
+      if (prev) prev.addEventListener('click', () => carousel.scrollBy({ left: -itemWidth, behavior: 'smooth' }));
+      if (next) next.addEventListener('click', () => carousel.scrollBy({ left: itemWidth, behavior: 'smooth' }));
+
+      // --- Drag to scroll (pointer events) ---
+      // We'll use pointer events so mouse and touch work the same. While dragging we block link clicks.
+      let isPointerDown = false;
+      let startX = 0;
+      let startScroll = 0;
+      let pointerId = null;
+      let wasDragging = false;
+
+      carousel.style.touchAction = carousel.style.touchAction || 'pan-y'; // allow vertical native scrolling
+
+      carousel.addEventListener('pointerdown', (e) => {
+        // only left button or touch
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        isPointerDown = true;
+        wasDragging = false;
+        pointerId = e.pointerId;
+        carousel.setPointerCapture(pointerId);
+        startX = e.clientX;
+        startScroll = carousel.scrollLeft;
+        carousel.classList.add('is-dragging');
+      });
+
+      carousel.addEventListener('pointermove', (e) => {
+        if (!isPointerDown || e.pointerId !== pointerId) return;
+        const dx = e.clientX - startX;
+        if (Math.abs(dx) > 5) wasDragging = true;
+        // invert dx: moving mouse right should scroll left visually
+        carousel.scrollLeft = startScroll - dx;
+      });
+
+      function endPointer(e) {
+        if (!isPointerDown || (pointerId && e && e.pointerId && e.pointerId !== pointerId)) return;
+        isPointerDown = false;
+        try{ if(pointerId) carousel.releasePointerCapture(pointerId); }catch(err){}
+        pointerId = null;
+        carousel.classList.remove('is-dragging');
+        // small debounce to keep wasDragging true for the subsequent click event
+        if (wasDragging) {
+          // temporarily mark the carousel as having been dragged so clicks inside it can be ignored
+          carousel.dataset.wasDragging = '1';
+          setTimeout(()=>{ delete carousel.dataset.wasDragging; }, 50);
+        }
+      }
+
+      carousel.addEventListener('pointerup', endPointer);
+      carousel.addEventListener('pointercancel', endPointer);
+      carousel.addEventListener('lostpointercapture', endPointer);
+
+      // Prevent clicks on links while dragging (so a drag doesn't trigger navigation)
+      // Allow product links inside the carousel (class .btn-primary) to navigate even after a drag.
+      carousel.addEventListener('click', function(e){
+        if (carousel.dataset.wasDragging) {
+          const a = e.target.closest('a');
+          if (a) {
+            // If the link is the product CTA, allow navigation — user expects to open the product page.
+            if (a.classList && a.classList.contains('btn-primary')) {
+              return; // allow default navigation
+            }
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        }
+      }, true);
+
+      // Support legacy touch as fallback (keeps behaviour for older browsers)
+      let touchStartX = 0, touchStartScroll = 0, touchDown = false;
+      carousel.addEventListener('touchstart', function(e){ if(e.touches && e.touches[0]){ touchDown=true; touchStartX = e.touches[0].clientX; touchStartScroll = carousel.scrollLeft; } }, {passive:true});
+      carousel.addEventListener('touchmove', function(e){ if(!touchDown) return; const dx = e.touches[0].clientX - touchStartX; carousel.scrollLeft = touchStartScroll - dx; }, {passive:true});
+      carousel.addEventListener('touchend', function(){ touchDown=false; });
+    }
+
+    // Delegated click fallback: ensure prev/next work even if direct listeners fail
+    offersWrap.addEventListener('click', function(e){
+      const btnPrev = e.target.closest('.offers-prev');
+      const btnNext = e.target.closest('.offers-next');
+      if (btnPrev && carousel){ e.preventDefault(); const firstItem = carousel.querySelector('.product'); const gap = parseFloat(getComputedStyle(carousel).gap) || 18; const w = firstItem ? Math.round(firstItem.getBoundingClientRect().width + gap) : 320; carousel.scrollBy({left:-w,behavior:'smooth'}); return; }
+      if (btnNext && carousel){ e.preventDefault(); const firstItem = carousel.querySelector('.product'); const gap = parseFloat(getComputedStyle(carousel).gap) || 18; const w = firstItem ? Math.round(firstItem.getBoundingClientRect().width + gap) : 320; carousel.scrollBy({left:w,behavior:'smooth'}); return; }
+    });
+  }
+
+  // If the carousel doesn't overflow (few items on wide screens) clone items until it does so arrows/drag work.
+  ;(function ensureCarouselOverflow(){
+    const wrap = document.querySelector('.offers-wrap');
+    if(!wrap) return;
+    const track = wrap.querySelector('.offers-carousel');
+    if(!track) return;
+
+    const originalItems = Array.from(track.querySelectorAll('.product'));
+    if(originalItems.length === 0) return;
+
+    // Try to clone synchronously and also after images load (in case widths weren't calculated yet)
+    function tryClone(maxRounds=6){
+      let rounds = 0;
+      // safety: don't run forever
+      while(track.scrollWidth <= track.clientWidth && rounds < maxRounds){
+        originalItems.forEach(it=>{
+          const c = it.cloneNode(true);
+          c.classList.add('cloned');
+          // ensure no duplicate ids inside clones
+          c.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
+          track.appendChild(c);
+        });
+        rounds++;
+      }
+      if(rounds > 0) console.info('offers-carousel: cloned items x' + rounds + ' to force overflow');
+      return rounds;
+    }
+
+    // First attempt now
+    let made = tryClone(5);
+    // If nothing was cloned (likely because images not loaded yet) schedule another attempt on window load
+    if(made === 0){
+      window.addEventListener('load', function(){ tryClone(8); });
+      // also try a short timeout in case load already fired
+      setTimeout(()=> tryClone(3), 250);
+    }
+  })();
+
+  // Enhanced carousel: indicators + autoplay
+  (function(){
+    const offersWrapLocal = document.querySelector('.offers-wrap');
+    if(!offersWrapLocal) return;
+    const carousel = offersWrapLocal.querySelector('.offers-carousel');
+    if(!carousel) return;
+    const items = Array.from(carousel.querySelectorAll('.product'));
+    if(items.length === 0) return;
+    // create indicators
+    const dots = document.createElement('div');
+    dots.className = 'offers-dots';
+    items.forEach((it, idx)=>{
+      const d = document.createElement('button');
+      d.className = 'offers-dot';
+      d.setAttribute('aria-label', 'Ir a oferta ' + (idx+1));
+      d.addEventListener('click', ()=>{
+        const left = it.offsetLeft - carousel.offsetLeft;
+        carousel.scrollTo({left,behavior:'smooth'});
+      });
+      dots.appendChild(d);
+    });
+    const nextBtn = offersWrapLocal.querySelector('.offers-next');
+    if(nextBtn) offersWrapLocal.insertBefore(dots, nextBtn);
+
+    function updateDots(){
+      const scrollLeft = carousel.scrollLeft;
+      let active = 0;
+      items.forEach((it, idx)=>{ if(scrollLeft + 10 >= it.offsetLeft - carousel.offsetLeft) active = idx; });
+      Array.from(dots.children).forEach((b,i)=> b.classList.toggle('active', i===active));
+    }
+    carousel.addEventListener('scroll', ()=> updateDots());
+    updateDots();
+
+    // autoplay
+    let autoplay = setInterval(()=>{
+      const current = Array.from(dots.children).findIndex(d=>d.classList.contains('active'));
+      const nextIdx = (current+1) % items.length;
+      const it = items[nextIdx];
+      carousel.scrollTo({left: it.offsetLeft - carousel.offsetLeft, behavior:'smooth'});
+    }, 4500);
+    // pause on hover/focus
+    offersWrapLocal.addEventListener('mouseover', ()=> clearInterval(autoplay));
+    offersWrapLocal.addEventListener('mouseleave', ()=> { clearInterval(autoplay); autoplay = setInterval(()=>{ const current = Array.from(dots.children).findIndex(d=>d.classList.contains('active')); const nextIdx = (current+1) % items.length; const it = items[nextIdx]; carousel.scrollTo({left: it.offsetLeft - carousel.offsetLeft, behavior:'smooth'}); }, 4500); });
+    // accessibility: keyboard navigation for dots
+    dots.querySelectorAll('.offers-dot').forEach((b, i)=> b.addEventListener('keydown', e=>{ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); const it = items[i]; carousel.scrollTo({left: it.offsetLeft - carousel.offsetLeft, behavior:'smooth'}); } }));
+  })();
+
+  // ---------------- CART (local-only, simple) ----------------
+  // Cart stored in localStorage under key 'vv-cart'
+  function getCart(){
+    try{ return JSON.parse(localStorage.getItem('vv-cart') || '[]'); }catch(e){ return []; }
+  }
+  function saveCart(cart){ localStorage.setItem('vv-cart', JSON.stringify(cart)); updateCartUI(); }
+  function updateCartUI(){
+    const cart = getCart();
+    const count = cart.reduce((s,i)=>s + (i.qty||0), 0);
+    const total = cart.reduce((s,i)=>s + (parseFloat(i.price)||0) * (i.qty||0), 0).toFixed(2);
+    const cartLink = document.querySelector('.cart-link');
+    if(cartLink){
+      cartLink.innerHTML = `🛒 <span class="small muted">${count} · ${total} €</span>`;
+    }
+  }
+  function addToCart(item){
+    const cart = getCart();
+    const existing = cart.find(i=>i.id === item.id);
+    if(existing){ existing.qty = (existing.qty||1) + (item.qty||1); }
+    else { cart.push({ id: item.id, name: item.name, price: item.price, qty: item.qty || 1 }); }
+    saveCart(cart);
+  }
+
+  // Delegate add-to-cart clicks (buttons with .btn-add-cart)
+  document.addEventListener('click', function(e){
+    const b = e.target.closest && e.target.closest('.btn-add-cart');
+    if(!b) return;
+    e.preventDefault();
+    const id = b.getAttribute('data-id');
+    const name = b.getAttribute('data-name') || b.getAttribute('data-id');
+    const price = parseFloat(b.getAttribute('data-price') || '0');
+    addToCart({ id, name, price, qty: 1 });
+    // small feedback
+    b.textContent = 'Añadido ✓';
+    setTimeout(()=>{ b.textContent = 'Añadir al carrito'; }, 1200);
+  });
+
+  // No-op: product links ('.btn-primary') in the offers carousel will navigate normally.
+
+  // Update cart UI on load
+  updateCartUI();
+
+  // The 'Comprar' CTAs in the offers carousel are standard <a class="btn-primary" href="..."> links.
+  // We intentionally allow native browser navigation for these links (same as 'Ver producto').
+  // If any other script is preventing navigation, it's safer to inspect/remove that script
+  // rather than force navigation here. For debugging purposes you can enable the log below.
+  // Example debug (uncomment if needed):
+  // document.querySelectorAll('.offers-wrap .offers-carousel a.btn-primary').forEach(a=> a.addEventListener('click', e=> console.log('offers CTA clicked', a.href), {capture:true}));
+
+  // DEBUG: log clicks on offers carousel CTAs without modifying behavior.
+  // This helps diagnose why a click might not navigate in the user's browser.
+  document.addEventListener('click', function debugOffersClick(e){
+    try{
+      const anchor = e.target.closest && e.target.closest('.offers-wrap .offers-carousel a.btn-primary');
+      if(!anchor) return; // not an offer CTA
+      const wrap = anchor.closest('.offers-wrap');
+      const carousel = wrap && wrap.querySelector('.offers-carousel');
+      console.groupCollapsed('DEBUG: offers CTA click');
+      console.log('href:', anchor.getAttribute('href'));
+      console.log('isTrusted:', e.isTrusted, 'defaultPrevented:', e.defaultPrevented);
+      console.log('event target:', e.target);
+      console.log('carousel wasDragging dataset:', carousel && carousel.dataset && carousel.dataset.wasDragging);
+      console.log('anchor classes:', anchor.className);
+      console.log('window.location.href (before):', window.location.href);
+      console.groupEnd();
+      // do not prevent default – only logging
+    }catch(err){ console.warn('debugOffersClick error', err); }
+  }, true);
+
+  // DEBUG: monitor who calls preventDefault for click events on offers CTAs.
+  // This temporarily wraps Event.prototype.preventDefault to log a stack trace
+  // when some code prevents the click on a .offers-carousel a.btn-primary.
+  (function monitorPreventDefault(){
+    try{
+      const origPrevent = Event.prototype.preventDefault;
+      Event.prototype.preventDefault = function(){
+        try{
+          if(this && this.type === 'click'){
+            const t = this.target || this.srcElement;
+            const anchor = t && t.closest && t.closest('.offers-wrap .offers-carousel a.btn-primary');
+            if(anchor){
+              console.groupCollapsed('DEBUG preventDefault called for offers CTA');
+              console.log('anchor href:', anchor.getAttribute('href'));
+              console.log('event target:', t);
+              console.log('call stack:');
+              console.trace();
+              console.groupEnd();
+            }
+          }
+        }catch(err){ /* ignore debug errors */ }
+        return origPrevent.apply(this, arguments);
+      };
+    }catch(err){ console.warn('monitorPreventDefault failed', err); }
+  })();
+
+  // Ensure buy links inside the offers carousel behave exactly like 'Ver producto'.
+  // If native navigation is blocked by another handler, this capture-phase listener
+  // will attempt navigation shortly after the click. It does not prevent default
+  // behaviour; it only forces navigation as fallback.
+  (function ensureOffersCTABehavior(){
+    const offersWrap = document.querySelector('.offers-wrap');
+    if(!offersWrap) return;
+    const carousel = offersWrap.querySelector('.offers-carousel');
+    if(!carousel) return;
+    const anchors = carousel.querySelectorAll('a.btn-primary');
+    anchors.forEach(a=>{
+      a.addEventListener('click', function(e){
+        try{
+          const href = a.getAttribute('href');
+          if(!href) return;
+          // schedule a fallback navigation shortly after the click.
+          // Most of the time the browser will navigate natively and the timeout
+          // will never be reached because the page unloads. If something prevented
+          // the navigation, this will open the target in the same tab.
+          setTimeout(()=>{
+            // If location already changed to the target, skip
+            try{ if(location.pathname.endsWith(href) || location.href.indexOf(href) !== -1) return; }catch(err){}
+            window.location.assign(href);
+          }, 80);
+        }catch(err){ console.warn('offers CTA fallback navigation error', err); }
+      }, {capture:true});
+    });
+  })();
+
+  // Bubble-phase safety: if any handler prevented the default navigation for a
+  // .offers-carousel a.btn-primary link, navigate programmatically here.
+  // This runs in the bubble phase (after capture/target), so it detects
+  // defaultPrevented set by other listeners and fixes the navigation.
+  document.addEventListener('click', function(e){
+    try{
+      const anchor = e.target.closest && e.target.closest('.offers-wrap .offers-carousel a.btn-primary');
+      if(!anchor) return;
+      if(e.defaultPrevented){
+        // Some script prevented the navigation; force it now in the same tab.
+        window.location.assign(anchor.href);
+      }
+    }catch(err){ /* ignore */ }
+  }, false);
+
+  // Delegate clicks on buy-now buttons inside offers carousel to navigate to product pages
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest && e.target.closest('button.buy-now');
+    if(!btn) return;
+    // If the button was clicked during a drag, still treat it as an intentional click
+    const href = btn.getAttribute('data-href');
+    if(!href) return;
+    // provide tiny delay to allow any UI feedback then navigate
+    e.preventDefault();
+    setTimeout(()=> { window.location.href = href; }, 10);
+  }, true);
 });

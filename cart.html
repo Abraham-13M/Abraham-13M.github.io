@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Carrito — Herbolario Verde Vida</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="main.js" defer></script>
+</head>
+<body>
+  <header class="container"><a href="index.html">← Seguir comprando</a></header>
+  <main class="container">
+    <h1>Carrito</h1>
+    <div id="cart-root">
+      <p class="small muted">Cargando carrito...</p>
+    </div>
+    <div style="margin-top:16px">
+      <button id="checkoutBtn" class="btn-primary">Realizar pedido (simulado)</button>
+    </div>
+  </main>
+
+  <script>
+  // Small cart UI using the same localStorage key 'vv-cart'
+  function renderCart(){
+    const root = document.getElementById('cart-root');
+    const cart = JSON.parse(localStorage.getItem('vv-cart')||'[]');
+    if(!root) return;
+    if(cart.length === 0){ root.innerHTML = '<p>Tu carrito está vacío. Añade productos desde la sección Ofertas.</p>'; return; }
+    let html = '<table class="cart-table"><thead><tr><th>Producto</th><th>Cantidad</th><th>Precio</th><th></th></tr></thead><tbody>';
+    let total = 0;
+    cart.forEach((it, idx)=>{
+      const line = (parseFloat(it.price)||0) * (it.qty||1);
+      total += line;
+      html += `<tr data-idx="${idx}"><td>${it.name}</td><td><input class="cart-qty" type="number" min="1" value="${it.qty||1}" data-idx="${idx}" style="width:64px"></td><td>${line.toFixed(2)} €</td><td><button class="btn-remove" data-idx="${idx}">Eliminar</button></td></tr>`;
+    });
+    html += `</tbody></table><div style="margin-top:12px;font-weight:700">Total: ${total.toFixed(2)} €</div>`;
+    root.innerHTML = html;
+  }
+
+  function saveCart(cart){ localStorage.setItem('vv-cart', JSON.stringify(cart)); }
+
+  document.addEventListener('click', function(e){
+    const rem = e.target.closest && e.target.closest('.btn-remove');
+    if(rem){ const idx = parseInt(rem.getAttribute('data-idx')); const cart = JSON.parse(localStorage.getItem('vv-cart')||'[]'); cart.splice(idx,1); saveCart(cart); renderCart(); return; }
+  });
+  document.addEventListener('change', function(e){
+    if(e.target && e.target.classList.contains('cart-qty')){
+      const idx = parseInt(e.target.getAttribute('data-idx'));
+      const qty = parseInt(e.target.value) || 1;
+      const cart = JSON.parse(localStorage.getItem('vv-cart')||'[]');
+      if(cart[idx]){ cart[idx].qty = qty; saveCart(cart); renderCart(); }
+    }
+  });
+
+  document.getElementById('checkoutBtn').addEventListener('click', function(){
+    // Simple simulated checkout
+    const cart = JSON.parse(localStorage.getItem('vv-cart')||'[]');
+    if(cart.length === 0){ alert('Tu carrito está vacío'); return; }
+    // Clear cart and simulate
+    localStorage.removeItem('vv-cart');
+    alert('Pedido simulado. Gracias por tu compra. (En producción integra un pasarela de pago)');
+    renderCart();
+  });
+
+  // Initial render
+  renderCart();
+  </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="280" viewBox="0 0 420 280">
+  <rect width="100%" height="100%" fill="#f6fbf7"/>
+  <g transform="translate(40,40)">
+    <path d="M40 100 C60 40, 120 40, 140 100" fill="#dff3e6" stroke="#59a66a" stroke-width="6" />
+  </g>
+  <text x="160" y="100" font-family="Segoe UI, Arial" font-size="20" fill="#153b2a">Romero</text>
+  <text x="160" y="130" font-family="Segoe UI, Arial" font-size="14" fill="#6b6b6b">Aceite esencial</text>
+</svg>

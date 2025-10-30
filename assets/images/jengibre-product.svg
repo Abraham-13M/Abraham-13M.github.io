@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="280" viewBox="0 0 420 280">
+  <rect width="100%" height="100%" fill="#fffaf4"/>
+  <rect x="40" y="60" width="120" height="80" rx="20" fill="#fdebd1" stroke="#e0b07a" stroke-width="5"/>
+  <text x="180" y="110" font-family="Segoe UI, Arial" font-size="20" fill="#a65a2a">Jengibre</text>
+  <text x="180" y="135" font-family="Segoe UI, Arial" font-size="14" fill="#6b6b6b">Suplemento energizante</text>
+</svg>

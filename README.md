@@ -1,3 +1,44 @@
+# Cambios en la landing
+
+Resumen de los cambios realizados para acercar la landing al estilo de la referencia (https://www.herbolariosdimam.es):
+
+- Header reescrito: logo, nombre, menú, campo de búsqueda y enlace de carrito.
+- Barra de promoción y fila de confianza (envío 24/48h, asesoramiento, pago seguro).
+- Sección "Ofertas" convertida en carrusel horizontal con controles prev/next y soporte táctil.
+- Productos y ofertas anotados con microdatos Schema.org (Organization, Product, Offer) básicos.
+- Búsqueda cliente: filtro simple por título/descripcion de productos (campo `#siteSearch`).
+- CTA y enlaces convertidos a anchors internas que usan desplazamiento suave.
+- Añadida ilustración SVG `assets/images/plant-herbal.svg` como imagen hero.
+
+Archivos modificados:
+
+- `index.html` — estructura del header, ofertas (carrusel), microdatos y anotaciones.
+- `styles.css` — estilos para header, carousel, trust row y ajustes visuales.
+- `main.js` — búsqueda cliente, smooth scroll y control del carrusel.
+- `assets/images/plant-herbal.svg` — ilustración añadida.
+
+Cómo probarlo localmente
+
+1. Inicia el servidor local (ya incluido en el repo):
+
+```powershell
+.\serve.ps1 -Port 8000
+```
+
+2. Abre http://localhost:8000/ en tu navegador.
+
+3. Prueba:
+- Escribe en el campo de búsqueda (encabezado) para filtrar productos.
+- Usa las flechas del carrusel en la sección "Ofertas" para navegar.
+- Haz clic en "Comprar" en un producto para ir a la sección de contacto.
+
+Siguientes pasos recomendados
+
+- Conectar cada producto a páginas de producto reales (si tienes URLs / catálogo).
+- Reemplazar imágenes de ejemplo por fotos optimizadas (sitio de producción).
+- Añadir datos de precio más completos y disponibilidad en los microdatos (si se dispone de inventario).
+
+Si quieres que avance con alguno de los pasos anteriores (por ejemplo enlazar productos a páginas reales o mejorar SEO con JSON-LD), dime cuál y lo implemento.
 # Herbolario Verde Vida — Landing
 
 Este repositorio contiene una landing page estática para Herbolario Verde Vida.

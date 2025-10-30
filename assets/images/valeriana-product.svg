@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="280" viewBox="0 0 420 280">
+  <rect width="100%" height="100%" fill="#fff8f2"/>
+  <ellipse cx="100" cy="120" rx="60" ry="40" fill="#f5e0d6" stroke="#d8bdb0" stroke-width="5"/>
+  <text x="180" y="110" font-family="Segoe UI, Arial" font-size="20" fill="#7a4a3b">Valeriana</text>
+  <text x="180" y="140" font-family="Segoe UI, Arial" font-size="14" fill="#6b6b6b">Suplemento sueño</text>
+</svg>
