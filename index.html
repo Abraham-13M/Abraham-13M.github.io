@@ -67,20 +67,100 @@
 		<!-- Barra de promoción (envío gratuito, ofertas) -->
 		<div class="promo-bar text-center">Envío gratuito a partir de 30€ · Atención personalizada en tienda · 24/48h</div>
 
-		<section class="hero">
-			<div>
-				<span class="eyebrow">Bienestar natural</span>
-				<h1>Productos naturales para cuidar tu bienestar</h1>
-				<p>En Herbolario Verde Vida (Madrid) seleccionamos aceites esenciales, suplementos y plantas para
-					acompañarte en un estilo de vida sano. Recomendaciones personalizadas y productos de confianza.</p>
-				<p>
-					<a href="#productos" class="btn-primary">Descubre nuestros productos</a>
-				</p>
-				<p class="small">Envíos en Madrid y atención personalizada en tienda. Pregunta por recomendaciones según
-					tu objetivo.</p>
+		<!-- Hero: versión landing (inspirada en la referencia) -->
+		<section class="hero hero-landing" aria-label="Hero principal">
+			<div class="container hero-grid">
+				<div class="hero-content">
+					<span class="eyebrow">Herbolario Verde Vida</span>
+					<h1>Cuida tu bienestar con remedios naturales</h1>
+					<p class="lead">Asesoramiento personalizado, aceites esenciales y fórmulas naturales seleccionadas para ti. Reserva una asesoría gratuita o descubre nuestras ofertas.</p>
+					<div class="hero-controls">
+						<select id="hero-select" class="hero-select" aria-label="Elige tu objetivo">
+							<option value="relajacion">Relajación</option>
+							<option value="sueno">Mejorar el sueño</option>
+							<option value="digestivo">Digestivo</option>
+							<option value="inmunidad">Defensas / Inmunidad</option>
+							<option value="energia">Energía y vitalidad</option>
+							<option value="concentracion">Concentración y memoria</option>
+							<option value="piel">Cuidado de la piel</option>
+						</select>
+						<button class="btn-primary btn-cta" id="hero-cta">Empieza ya</button>
+					</div>
+					<p class="small muted" style="margin-top:10px">¿No sabes por dónde empezar? Habla con nuestro equipo — respuesta en 24/48h.</p>
+				</div>
+				<div class="hero-visual" aria-hidden="true">
+					<div class="visual-ring">
+						<img src="assets/images/lavanda.jpg?v=2" alt="Aceite esencial de lavanda" loading="lazy" />
+					</div>
+				</div>
 			</div>
 
-			<!-- aside removed: 'Especial de la semana' was removed per request -->
+			<!-- Barra de métricas / trust debajo del hero -->
+			<div class="container hero-metrics">
+				<div class="metrics-card">
+					<div class="metric">
+						<div class="metric-num">300.000</div>
+						<div class="metric-label small muted">clientes satisfechos</div>
+					</div>
+					<div class="metric">
+						<div class="metric-num">800.000</div>
+						<div class="metric-label small muted">productos vendidos</div>
+					</div>
+					<div class="metric">
+						<div class="metric-num">2.400</div>
+						<div class="metric-label small muted">asesorías realizadas</div>
+					</div>
+					<div class="metric trustpilot">
+						<div class="metric-num">★ ★ ★ ★ ☆</div>
+						<div class="metric-label small muted">TrustScore · 4.2 · 5.496 opiniones</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Features (beneficios rápidos) -->
+		<section class="container features" aria-label="Beneficios">
+			<div class="feature-card">
+				<div style="font-size:28px">🌿</div>
+				<h3>Asesoramiento personalizado</h3>
+				<p class="small muted">Nuestro equipo te ayuda a elegir remedios naturales según tus necesidades.</p>
+			</div>
+			<div class="feature-card">
+				<div style="font-size:28px">🚚</div>
+				<h3>Envío rápido y seguro</h3>
+				<p class="small muted">Envíos 24/48h y seguimiento de tu pedido.</p>
+			</div>
+			<div class="feature-card">
+				<div style="font-size:28px">🌱</div>
+				<h3>Productos de calidad</h3>
+				<p class="small muted">Ingredientes naturales y proveedores responsables.</p>
+			</div>
+		</section>
+
+		<!-- How it works / pasos simples -->
+		<section class="container" aria-label="Cómo funciona">
+			<h2>Cómo funciona</h2>
+			<div class="steps" style="margin-top:12px">
+				<div class="step"><div style="display:flex;align-items:center"><div class="num">1</div><div><strong>Cuéntanos tu necesidad</strong><div class="small muted">Selecciona tus objetivos o escribe tu consulta.</div></div></div></div>
+				<div class="step"><div style="display:flex;align-items:center"><div class="num">2</div><div><strong>Recibe recomendaciones</strong><div class="small muted">Nuestro equipo o la IA te sugiere productos y rutinas.</div></div></div></div>
+				<div class="step"><div style="display:flex;align-items:center"><div class="num">3</div><div><strong>Compra o reserva</strong><div class="small muted">Añade al carrito o reserva una asesoría gratuita.</div></div></div></div>
+			</div>
+		</section>
+		<!-- Call To Action: herbolario -->
+		<section class="container cta" aria-labelledby="cta-title">
+			<div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+				<div style="flex:1;min-width:220px">
+					<h2 id="cta-title">¿Buscas soluciones naturales para sentirte mejor?</h2>
+					<p class="small muted">Reserva una asesoría gratuita con nuestro equipo y recibe recomendaciones personalizadas de productos naturales, infusiones y suplementos.</p>
+					<div style="margin-top:12px">
+						<a href="#contacto" class="btn-primary cta-primary" id="cta-contact" onclick="try{ if(window.VVChat && VVChat.open){ window.VVChat.open(); return false;} }catch(e){}">Pedir asesoramiento gratis</a>
+						<a href="#ofertas" class="btn-primary" style="background:#fff;color:var(--green-700);border:1px solid var(--green-700);margin-left:10px;padding:10px 14px">Ver ofertas</a>
+					</div>
+				</div>
+				<div style="flex:0 0 220px;min-width:180px">
+					<img src="https://images.unsplash.com/photo-1506806732259-39c2d0268443?auto=format&fit=crop&w=1000&q=80" alt="Consulta herbolario" style="width:100%;border-radius:10px;box-shadow:var(--shadow)" />
+				</div>
+			</div>
 		</section>
 
 		<!-- Trust / beneficios (envío, asesoramiento, pago seguro) -->
@@ -88,8 +168,8 @@
 			<div class="trust-item">
 				<div class="trust-ico">🚚</div>
 				<div>
-					<strong>Envío 24/48h</strong>
-					<div class="small muted">Gratis a partir de 30€</div>
+					<strong>Envío rápido</strong>
+					<div class="small muted">Envíos 24/48h y seguimiento</div>
 				</div>
 			</div>
 			<div class="trust-item">
@@ -414,14 +494,49 @@
 										<button class="btn-primary" type="submit">Suscribirse</button>
 									</div>
 								</form>
-								<p class="small" style="margin-top:8px">Nota: para doble opt-in considera integrar
-									MailerLite o Mailchimp (ver README).</p>
+                                
 							</div>
 						</div>
 					</div>
 				</aside>
 			</div>
 		</section>
+
+			<!-- FAQ: preguntas frecuentes justo después del contacto -->
+			<section id="faq" class="container" aria-labelledby="faq-title">
+				<h2 id="faq-title">Preguntas frecuentes</h2>
+				<div class="faq" style="margin-top:12px">
+					<details>
+						<summary>¿Cuánto tarda el envío y cuánto cuesta?</summary>
+						<p class="small">Envíos 24/48h para pedidos en península a partir de 30€ el envío es gratuito. Para envíos internacionales los tiempos y costes pueden variar; consulta la página de envío en el pie de página o contacta con nosotros.</p>
+					</details>
+
+					<details>
+						<summary>¿Puedo devolver un producto si no me convence?</summary>
+						<p class="small">Aceptamos devoluciones de productos sin abrir en un plazo de 14 días desde la entrega. Para productos abiertos o consumibles contacta con nuestro servicio de atención para valorar el caso específico.</p>
+					</details>
+
+					<details>
+						<summary>¿Cómo funciona la asesoría gratuita?</summary>
+						<p class="small">La asesoría consiste en una breve consulta telefónica o por chat donde valoramos tus necesidades y te recomendamos productos y rutinas. Puedes reservar desde el botón 'Pedir asesoramiento gratis' o escribiéndonos en el formulario de contacto.</p>
+					</details>
+
+					<details>
+						<summary>¿Los productos tienen certificaciones o información sobre ingredientes?</summary>
+						<p class="small">Cada ficha de producto incluye una descripción y lista de ingredientes. Para productos certificados verás el sello correspondiente en la ficha (p.ej. ecológico, controlado).</p>
+					</details>
+
+					<details>
+						<summary>¿Cómo debo usar los aceites esenciales de forma segura?</summary>
+						<p class="small">No apliques aceites esenciales puros directamente sobre la piel; diluye en un aceite vegetal. Evita el uso en niños muy pequeños y consulta en embarazo o lactancia. Si tienes dudas contacta con nuestro equipo.</p>
+					</details>
+
+					<details>
+						<summary>¿Qué métodos de pago aceptáis?</summary>
+						<p class="small">Aceptamos tarjeta de crédito/débito y otras pasarelas seguras. Los detalles aparecen en el proceso de pago y en la política de privacidad.</p>
+					</details>
+				</div>
+			</section>
 	</main>
 
 	<footer>

@@ -266,6 +266,43 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   })();
 
+  // Fallback: if the native select is not visible or not rendering correctly,
+  // create a row of buttons so users can choose an objective. This helps when
+  // some browsers or CSS environments hide the select control.
+  (function heroSelectFallback(){
+    const heroSelect = document.getElementById('hero-select');
+    const heroBtn = document.getElementById('hero-cta');
+    if(!heroSelect || !heroBtn) return;
+    // detect if select is visible
+    const cs = getComputedStyle(heroSelect);
+    const isHidden = cs.display === 'none' || cs.visibility === 'hidden' || heroSelect.offsetWidth === 0 || heroSelect.options.length === 0;
+    if(!isHidden) return; // native select visible, nothing to do
+
+    // build fallback buttons
+    const wrapper = document.createElement('div');
+    wrapper.className = 'hero-select-fallback';
+    Array.from([].slice.call(heroSelect.options)).forEach(opt=>{
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = opt.textContent || opt.value;
+      b.dataset.value = opt.value;
+      b.addEventListener('click', function(){
+        // mark active
+        wrapper.querySelectorAll('button').forEach(btn=>btn.classList.remove('active'));
+        b.classList.add('active');
+        // set select value (if possible) and simulate click on the CTA
+        try{ heroSelect.value = b.dataset.value; }catch(e){}
+        // trigger the CTA navigation
+        heroBtn.click();
+      });
+      wrapper.appendChild(b);
+    });
+    // insert after the select (or at end of hero-controls)
+    const parent = heroSelect.parentNode;
+    if(parent){ parent.appendChild(wrapper); }
+    console.info('hero-select-fallback: created fallback buttons because select was not visible');
+  })();
+
   // Enhanced carousel: indicators + autoplay
   (function(){
     const offersWrapLocal = document.querySelector('.offers-wrap');
@@ -437,6 +474,100 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   })();
 
+  // HERO CTA: navegar a una página de objetivo según la selección del usuario
+  (function heroCTA(){
+    const heroBtn = document.getElementById('hero-cta');
+    const heroSelect = document.getElementById('hero-select');
+    if(!heroBtn || !heroSelect) return;
+    heroBtn.addEventListener('click', function(e){
+      try{
+        const val = (heroSelect.value || 'relajacion').toString().trim();
+        // map value to a file name (we use "objetivo-<slug>.html" in the site root)
+        const allowed = ['relajacion','sueno','digestivo','inmunidad','energia','concentracion','piel'];
+        const slug = allowed.includes(val) ? val : 'relajacion';
+  // use a relative path so navigation works from file:// and from any hosting root
+  const href = './objetivo-' + slug + '.html';
+  // debug log
+  console.info('Hero CTA -> navigating to', href);
+  // navigate in same tab; small delay for UX (button ripple) then assign
+  setTimeout(()=> { window.location.href = href; }, 60);
+      }catch(err){ console.warn('Hero CTA navigation failed', err); }
+    });
+  })();
+
+  // Provide a visible options toggle/menu beside the select so users can open
+  // a clear list of objectives if the native dropdown doesn't render properly.
+  (function heroOptionsMenu(){
+    const heroControls = document.querySelector('.hero-controls');
+    const heroSelect = document.getElementById('hero-select');
+    const heroBtn = document.getElementById('hero-cta');
+    if(!heroControls || !heroSelect || !heroBtn) return;
+
+    // create toggle button if not present
+    let toggle = heroControls.querySelector('.hero-options-toggle');
+    if(!toggle){
+      toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'hero-options-toggle';
+      toggle.textContent = 'Opciones';
+      // insert after the select
+      heroSelect.insertAdjacentElement('afterend', toggle);
+    }
+
+    // build floating menu appended to body to avoid clipping
+    let menu = document.querySelector('.hero-options-menu');
+    if(!menu){
+      menu = document.createElement('div');
+      menu.className = 'hero-options-menu';
+      menu.setAttribute('role','menu');
+      document.body.appendChild(menu);
+    }
+
+    // populate menu from select options
+    function renderMenu(){
+      menu.innerHTML = '';
+      Array.from(heroSelect.options).forEach(opt=>{
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = opt.textContent;
+        b.dataset.value = opt.value;
+        b.addEventListener('click', ()=>{
+          // set select, close menu and trigger navigation
+          try{ heroSelect.value = b.dataset.value; }catch(e){}
+          // visual active state
+          menu.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+          b.classList.add('active');
+          menu.classList.remove('open');
+          // trigger the CTA's handler (same as clicking the CTA)
+          heroBtn.click();
+        });
+        menu.appendChild(b);
+      });
+    }
+
+    renderMenu();
+
+    // toggle behavior
+    toggle.addEventListener('click', function(){
+      menu.classList.toggle('open');
+      // position menu near the toggle (calculate coords)
+      const rect = toggle.getBoundingClientRect();
+      // place menu under toggle on wide screens, or fixed bottom on small
+      if(window.innerWidth > 900){
+        menu.style.left = (rect.left) + 'px';
+        menu.style.top = (rect.bottom + 8) + 'px';
+        menu.style.right = 'auto';
+      } else {
+        menu.style.left = '';
+        menu.style.right = '12px';
+      }
+    });
+
+    // close on outside click or Esc
+    document.addEventListener('click', function(e){ if(!menu.contains(e.target) && !toggle.contains(e.target)) menu.classList.remove('open'); });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') menu.classList.remove('open'); });
+  })();
+
   // Bubble-phase safety: if any handler prevented the default navigation for a
   // .offers-carousel a.btn-primary link, navigate programmatically here.
   // This runs in the bubble phase (after capture/target), so it detects
@@ -451,6 +582,37 @@ document.addEventListener('DOMContentLoaded', function(){
       }
     }catch(err){ /* ignore */ }
   }, false);
+
+  // Robust capture-phase handler: force navigation for carousel 'Comprar' links
+  // in case other handlers prevent default or the browser blocks native navigation.
+  document.addEventListener('click', function(e){
+    try{
+      const anchor = e.target.closest && e.target.closest('.offers-carousel a.btn-primary');
+      if(!anchor) return;
+      // Only react to primary (left) clicks without modifiers
+      if(e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      // Prevent other handlers from interfering and navigate immediately in same tab
+      e.preventDefault();
+      console.info('Forced navigation to', anchor.href);
+      window.location.href = anchor.href;
+    }catch(err){ console.warn('Forced carousel CTA navigation failed', err); }
+  }, true);
+
+  // EXTRA: handle mousedown in capture phase to force navigation earlier
+  // Some drag/pointer handlers can intercept click events; handling mousedown
+  // ensures immediate navigation on left-button press (no modifiers).
+  document.addEventListener('mousedown', function(e){
+    try{
+      const anchor = e.target.closest && e.target.closest('.offers-carousel a.btn-primary');
+      if(!anchor) return;
+      if(e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      // Prevent other handlers from stopping navigation and navigate now
+      e.preventDefault();
+      e.stopImmediatePropagation && e.stopImmediatePropagation();
+      console.info('Mousedown forced navigation to', anchor.href);
+      window.location.href = anchor.href;
+    }catch(err){ console.warn('Mousedown navigation fail', err); }
+  }, true);
 
   // Delegate clicks on buy-now buttons inside offers carousel to navigate to product pages
   document.addEventListener('click', function(e){

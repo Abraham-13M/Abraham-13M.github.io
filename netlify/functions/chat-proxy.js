@@ -11,12 +11,39 @@ exports.handler = async function(event, context) {
   if(!question) return { statusCode: 400, body: 'Missing question' };
 
   const OPENAI_KEY = process.env.OPENAI_API_KEY;
-  if(!OPENAI_KEY){
-    return { statusCode: 500, body: JSON.stringify({ error: 'Server not configured: OPENAI_API_KEY missing' }) };
-  }
+  const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
 
+  // Prefer Anthropic Claude Sonnet 4 if ANTHROPIC_API_KEY is provided, otherwise fall back to OpenAI
   try{
-  const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+    if(ANTHROPIC_KEY){
+      // Anthropic Responses API (best-effort shape). Configure ANTHROPIC_API_KEY in Netlify env vars.
+      // NOTE: If Anthropic changed their request format, adjust this body accordingly.
+      const aResp = await fetch('https://api.anthropic.com/v1/responses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': ANTHROPIC_KEY
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4',
+          // `input` is a common field in Anthropic's Responses API; adjust if the API you use differs.
+          input: `Eres un asistente para una tienda herbolario. Responde brevemente, sugiere productos del catálogo cuando sea relevante y siempre ofrece un enlace si existe. Pregunta del usuario: ${question}`,
+          max_tokens_to_sample: 600,
+          temperature: 0.2
+        })
+      });
+      const aData = await aResp.json().catch(()=> null);
+      // Try common fields for output
+      const anthropicText = (aData && (aData.output && aData.output[0] && aData.output[0].content && aData.output[0].content[0] && aData.output[0].content[0].text))
+        || (aData && aData.completion) || (aData && aData.output && aData.output_text) || JSON.stringify(aData);
+      return { statusCode: 200, body: JSON.stringify({ answer: anthropicText, provider: 'anthropic' }) };
+    }
+
+    if(!OPENAI_KEY){
+      return { statusCode: 500, body: JSON.stringify({ error: 'Server not configured: neither OPENAI_API_KEY nor ANTHROPIC_API_KEY present' }) };
+    }
+
+    const resp = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -35,7 +62,7 @@ exports.handler = async function(event, context) {
     const data = await resp.json();
     // extract text
     const answer = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content ? data.choices[0].message.content : JSON.stringify(data);
-    return { statusCode: 200, body: JSON.stringify({ answer }) };
+    return { statusCode: 200, body: JSON.stringify({ answer, provider: 'openai' }) };
   }catch(err){
     return { statusCode: 502, body: JSON.stringify({ error: String(err) }) };
   }
